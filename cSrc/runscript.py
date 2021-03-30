@@ -3,10 +3,10 @@ import sys
 
 fr = int(sys.argv[1])
 to = int(sys.argv[2])
-
+currentpath = os.getcwd()
 for k in range(fr,to):
     print(k)
     os.system("mkdir "+str(k))
-    os.system("cd "+str(k))
+    os.chdir(currentpath+'/'+str(k))
     os.system('../main')
-    os.system("cd ../")
+    os.chdir('../')
