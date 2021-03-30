@@ -35,13 +35,11 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
         for nj in range(num_neurons):
             fc_num = np.sum(all_neuron_diffs[ni] * all_neuron_diffs[nj])
             fc_den = np.sqrt(np.sum(all_neuron_diffs[ni] ** 2) * np.sum(all_neuron_diffs[nj] ** 2))
-            #fc_den = np.sum(all_neuron_diffs[ni] ** 2 * all_neuron_diffs[nj] ** 2)
             _fc_row.append(fc_num / fc_den)
         fc.append(_fc_row)
 
     if show:
-        maxv = 1.0 #np.max(np.abs(fc))
-        plt.imshow(fc, aspect="equal", origin="lower", vmin=-maxv, vmax=maxv)
+        plt.imshow(fc, aspect="equal", origin="lower", vmin=-1, vmax=1)
         plt.colorbar()
         plt.xlabel("neuron #")
         plt.ylabel("neuron #")
@@ -51,13 +49,13 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../data/best_categ_pass_agent"
-    task_name = "A"
-    subtask_name = "pass"  # "all subtasks"
+    data_dir = "../AnalysisData/best_categ_pass_agent"
+    task_name = "B"
+    subtask_name = "catch"  # "all subtasks"
     num_neurons = 5
     fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons)
 
-    data_dir = "../data/best_categ_pass_agent"
+    data_dir = "../AnalysisData/best_categ_pass_agent"
     task_name = "B"
     subtask_name = "avoid"  # "all subtasks"
     num_neurons = 5

@@ -6,14 +6,34 @@ import matplotlib.pyplot as plt
 
 from sklearn.cluster import KMeans
 
-def imshow(dat, xlabel, ylabel, title, aspect):
+
+def find_best_K(points, kmax):
+    sse = []
+    for k in range(1, kmax + 1):
+        kmeans = KMeans(n_clusters=k).fit(points)
+        centroids = kmeans.cluster_centers_
+        pred_clusters = kmeans.predict(points)
+
+        curr_sse = 0
+        # calculate square of Euclidean distance of each point from its cluster center and add to current WSS
+        for i in range(len(points)):
+            curr_center = centroids[pred_clusters[i]]
+            curr_sse += (points[i, 0] - curr_center[0]) ** 2 + (points[i, 1] - curr_center[1]) ** 2
+
+        sse.append(curr_sse)
+
+    return np.argmin(sse) + 1
+
+
+def imshow(dat, xlabel, ylabel, title, aspect, block=False):
     plt.imshow(dat, origin="lower", aspect=aspect)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     plt.colorbar()
     plt.tight_layout()
-    plt.show()
+    # plt.show(block=block)
+
 
 def efc(data, num_clusters, show):
     """
@@ -21,6 +41,7 @@ def efc(data, num_clusters, show):
     """
     nneurons, ntrials, ntimepoints = data.shape
     data = np.reshape(data, [nneurons, -1])
+    node_pairs = []
 
     # z-normalize
     data = data.T
@@ -31,15 +52,17 @@ def efc(data, num_clusters, show):
 
     # edge time series
     edge_ts = []
-    for i,di in enumerate(data):
-        for dj in data[i:]:
-            edge_ts.append(di*dj)
+    for i, di in enumerate(data):
+        for j, dj in enumerate(data[i:]):
+            edge_ts.append(di * dj)
+            node_pairs.append([i, i + j])
     edge_ts = np.array(edge_ts)
+    node_pairs = np.array(node_pairs)
     print(np.shape(edge_ts))
 
     if show:
-        plt.figure(figsize=[8,4])
-        imshow(edge_ts[:,:ntimepoints], "time", "Node pairs", "Edge time series", "auto")
+        plt.figure(figsize=[8, 4])
+        imshow(edge_ts[:, :ntimepoints], "time", "Node pairs", "Edge time series", "auto")
 
     # efc
     inner_prod = np.matmul(edge_ts, edge_ts.T)
@@ -48,36 +71,49 @@ def efc(data, num_clusters, show):
     norm_mat = np.matmul(sqrt_var, sqrt_var.T)
     efc = inner_prod / norm_mat
 
-    if show:
-        imshow(efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal")
-
     # community detection
     # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-    ci = KMeans(n_clusters=num_clusters, random_state=0).fit(efc).labels_
+    best_k = find_best_K(efc, 5)
+    ci = KMeans(n_clusters=best_k).fit(efc).labels_
+
+    if show:
+        sorted_inds = np.argsort(ci)
+        tmp_efc = [e[sorted_inds] for e in efc[sorted_inds]]
+        plt.figure()
+        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal")
+        ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
+        print(ticks)
+        plt.xticks(np.arange(len(efc)), ticks)
+        plt.yticks(np.arange(len(efc)), ticks)
 
     # map back to nodes
     ind = 0
-    node_ci = np.zeros([nneurons,nneurons])
+    node_ci = np.zeros([nneurons, nneurons])
     for ni in range(nneurons):
         for nj in range(ni, nneurons):
-            node_ci[ni,nj] = ci[ind]
-            node_ci[nj,ni] = ci[ind]
+            node_ci[ni, nj] = ci[ind]
+            node_ci[nj, ni] = ci[ind]
             ind += 1
 
     if show:
+        plt.figure()
         imshow(node_ci, "Node pairs", "Node pairs", "Edge communities", "equal")
 
     # find nodes that have similar community profiles
-    dists = np.zeros([nneurons,nneurons])
+    dists = np.zeros([nneurons, nneurons])
     for ni in range(nneurons):
         for nj in range(ni, nneurons):
-            dists[ni,nj] = 1 - np.mean(node_ci[ni] != node_ci[nj])
-            dists[nj,ni] = dists[ni,nj]
+            dists[ni, nj] = 1 - np.mean(node_ci[ni] != node_ci[nj])
+            dists[nj, ni] = dists[ni, nj]
 
     if show:
+        plt.figure()
         imshow(dists, "Node pairs", "Node pairs", "Edge community similarities", "equal")
 
+    ## other stuff
 
+    if show:
+        plt.show()
 
 
 def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_clusters=3, show=True):
@@ -103,8 +139,8 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../data/best_categ_pass_agent"
+    data_dir = "../AnalysisData/best_categ_pass_agent"
     task_name = "B"
-    subtask_name = "catch"  # "all subtasks"
+    subtask_name = "catch"  # use "*" for all subtasks
     num_neurons = 5
     fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
