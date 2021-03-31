@@ -6,13 +6,10 @@ import matplotlib.pyplot as plt
 import infotheory
 
 
-def mi_inT_neuron_subtask(data_dir, task_name, num_neurons, show=True):
+def mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True):
     """
     # information about subtask in time
     """
-    if show:
-        plt.figure()
-
     # one neuron at a time
     mis = []
     for ni in range(num_neurons):
@@ -65,14 +62,10 @@ def mi_inT_neuron_subtask(data_dir, task_name, num_neurons, show=True):
     return mis
 
 
-def mi_Tavg_neuron_subtask(data_dir, task_name, num_neurons, show=True):
+def mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True):
     """
     # time-averaged information about subtask
     """
-    if show:
-        plt.figure()
-    subtask_name = "*"
-
     # one neuron at a time
     mis = []
     for ni in range(num_neurons):
@@ -112,7 +105,7 @@ def mi_Tavg_neuron_subtask(data_dir, task_name, num_neurons, show=True):
             plt.xlabel("neuron output")
             plt.ylabel("subtask")
             plt.tight_layout()
-            plt.show()
+            # plt.show()
 
     return mis
 
@@ -122,10 +115,22 @@ if __name__ == "__main__":
     # data_dir = "../AnalysisData/best_categ_pass_agent"
     data_dir = "../AnalysisData/best_offset"
     task_name = "B"
-    subtask_name = "*"  # "all subtasks"
     num_neurons = 5
 
-    mis = mi_Tavg_neuron_subtask(data_dir, task_name, num_neurons, show=True)
-    print("mi_Tavg_neuron_subtask:{}\n".format(mis))
+    # analyze combine network across subtasks
+    print("\nAnalyze combine network across subtasks")
+    subtask_name = "*"  # "all subtasks"
+    mis = mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=False)
+    plt.figure()
+    plt.scatter(np.arange(1, num_neurons + 1), mis, color="k")
+    plt.title("Total MI about subtask")
+    plt.xlabel("neuron #")
+    plt.ylabel("MI")
 
-    mi_inT_neuron_subtask(data_dir, task_name, num_neurons, show=True)
+    # in time across subtasks
+    print("\nIn time across subtasks")
+    subtask_name = "*"
+    plt.figure()
+    mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True)
+
+    plt.show()
