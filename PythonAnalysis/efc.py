@@ -39,16 +39,18 @@ def efc(data, num_clusters, show):
     """
     data: N x time
     """
-    nneurons, ntrials, ntimepoints = data.shape
+    nneurons, ntimepoints = data.shape
     data = np.reshape(data, [nneurons, -1])
     node_pairs = []
 
     # z-normalize
-    data = data.T
-    means = np.mean(data, axis=0)
-    stds = np.std(data, axis=0)
-    data = (data - means) / stds
-    data = data.T
+    # data = data.T
+    # means = np.mean(data, axis=1)
+    # stds = np.std(data, axis=1)
+    # print(means, stds)
+    #
+    # data = (data - means) / stds
+    # data = data.T
 
     # edge time series
     edge_ts = []
@@ -82,7 +84,6 @@ def efc(data, num_clusters, show):
         plt.figure()
         imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal")
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
-        print(ticks)
         plt.xticks(np.arange(len(efc)), ticks)
         plt.yticks(np.arange(len(efc)), ticks)
 
@@ -134,14 +135,25 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
 
     all_neuron_dat = np.array(all_neuron_dat)
     print(np.shape(all_neuron_dat))
+    nneurons, ntrials, ntimepoints = all_neuron_dat.shape
+    all_neuron_dat = np.reshape(all_neuron_dat, [nneurons, -1])
+
     efc(all_neuron_dat, num_clusters, show)
 
 
+def test_efc():
+    data_file = "../AnalysisData/ts.csv"
+    data = np.loadtxt(data_file, delimiter=",").T
+    efc(data, 10, True)
+
+
 if __name__ == "__main__":
+    test_efc()
+
     # analysis args
     # data_dir = "../AnalysisData/best_categ_pass_agent"
-    data_dir = "../AnalysisData/best_offset"
-    task_name = "A"
-    subtask_name = "*"  # use "*" for all subtasks
-    num_neurons = 5
-    fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
+    # data_dir = "../AnalysisData/best_offset"
+    # task_name = "A"
+    # subtask_name = "*"  # use "*" for all subtasks
+    # num_neurons = 5
+    # fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
