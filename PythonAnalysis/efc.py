@@ -139,8 +139,9 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../AnalysisData/best_categ_pass_agent"
-    task_name = "B"
-    subtask_name = "catch"  # use "*" for all subtasks
+    # data_dir = "../AnalysisData/best_categ_pass_agent"
+    data_dir = "../AnalysisData/best_offset"
+    task_name = "A"
+    subtask_name = "*"  # use "*" for all subtasks
     num_neurons = 5
     fc_across_trials(data_dir, task_name, subtask_name, num_neurons)

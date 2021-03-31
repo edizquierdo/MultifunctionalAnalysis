@@ -17,10 +17,10 @@ const int 		GENS 		 					= 1000;
 // Global constants
 const int			CIRCUITSIZE				= 15;
 const int 		NUMRAYS 					= 7;
-const int 		NUMINTER 					= 5;
+const int 		NUMINTER 					= 5; //15;
 const int 		NUMMOTOR   				= 2;
 const int 		H_NUMRAYS = 4;
-const int 		H_NUMINTER = 3;
+const int 		H_NUMINTER = 3; //8;
 const int 		H_NUMMOTOR = 1;
 
 const double	StepSize					= 0.1;
@@ -38,8 +38,8 @@ const double MINSIZE = 20.0; // Diameter of agent is 30
 const double MAXSIZE = 40.0;
 const double SIZESTEP = 1.0; //0.5;
 // Pos
-const double MINPOS = 5; //-30;
-const double MAXPOS = 5;
+const double MINPOS = 5; //-30
+const double MAXPOS = 30;
 const double POSSTEP = 5; //5;
 
 const double REPS = 1;
@@ -404,6 +404,76 @@ void testPerceiveAffordance(TVector<double> &v, RandomState &rs)
 	pass_posx.close();
 }
 
+void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
+{
+	ofstream ftotal("lesions_afford.dat"),fpass("lesions_afford_pass.dat"),favoid("lesions_afford_avoid.dat");
+	for (int from = NUMRAYS + 1; from <= NUMRAYS + NUMINTER; from++)
+	{
+		for (int to = NUMRAYS + 1; to <= NUMRAYS + NUMINTER; to++)
+		{
+			double fit = 0.0, fit_avoid = 0.0, fit_pass = 0.0;
+			int trials = 0, trials_pass = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
+			Line ObjectLeft(0.0,275.0,-3,0.0,30);
+			Line ObjectRight(0.0,275.0,-3,0.0,30);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
+			{
+				if (pos != 0)
+				{
+					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += SIZESTEP)
+					{
+						if (gapsize != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								ObjectRight.SetPositionX((gapsize/2)+(30/2.0) + pos);
+								ObjectLeft.SetPositionX((-(gapsize/2)-(30/2.0)) + pos);
+								ObjectRight.SetPositionY(275.0);
+								ObjectLeft.SetPositionY(275.0);
+								for (double t = 0; ObjectLeft.PositionY() > BodySize/2; t += StepSize) {
+									Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
+									ObjectLeft.Step(StepSize);
+									ObjectRight.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - pos); //XXX
+								if (gapsize < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_pass += final_distance;
+									trials_pass += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fpass << fit_pass/trials_pass << " ";
+			favoid << fit_avoid/trials_avoid << " ";
+		}
+		ftotal << endl;
+		fpass << endl;
+		favoid << endl;
+	}
+	ftotal.close();
+	fpass.close();
+	favoid.close();
+}
 // - - - - - - - - - - - - - - - - - -
 // NSF RI 2019
 // Task 2: Size categorization using Circles.
@@ -584,52 +654,72 @@ void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	catch_posx.close();
 }
 
-double CircleSizeCategorizationLesions(TVector<double> &v, RandomState &rs)
+void CircleSizeCategorizationConnectionLesions(TVector<double> &v, RandomState &rs)
 {
-	double fit = 0.0;
-	int trials = 0;
-	double final_distance = 0.0;
-	VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
-	TVector<double> phenotype;
-	phenotype.SetBounds(1, VectSize);
-	GenPhenMapping(v, phenotype);
-	Agent.SetController(phenotype);
-	Circle Object(0.0,275.0,-3,0.0,30);
-	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
+	ofstream ftotal("lesions_circle.dat"),fcatch("lesions_circle_catch.dat"),favoid("lesions_circle_avoid.dat");
+	for (int from = NUMRAYS + 1; from <= NUMRAYS + NUMINTER; from++)
 	{
-		if (pos != 0)
+		for (int to = NUMRAYS + 1; to <= NUMRAYS + NUMINTER; to++)
 		{
-			for (double size = MINSIZE; size <= MAXSIZE; size += SIZESTEP)
+			double fit = 0.0, fit_avoid = 0.0, fit_catch = 0.0;
+			int trials = 0, trials_catch = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
+			Circle Object(0.0,275.0,-3,0.0,30);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 			{
-				if (size != BodySize)
+				if (pos != 0)
 				{
-					for (double reps = 0; reps <= REPS; reps += 1)
+					for (double size = MINSIZE; size <= MAXSIZE; size += SIZESTEP)
 					{
-						Agent.Reset(0, 0, 0);
-						Agent.SetPositionX(0);
-						Object.SetPositionY(275.0);
-						Object.SetPositionX(pos);
-						Object.SetSize(size);
-						for (double t = 0; Object.PositionY() > BodySize/2; t += StepSize) {
-							Agent.Step(rs, StepSize, Object);
-							Object.Step(StepSize);
+						if (size != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								Object.SetPositionY(275.0);
+								Object.SetPositionX(pos);
+								Object.SetSize(size);
+								for (double t = 0; Object.PositionY() > BodySize/2; t += StepSize) {
+									Agent.Step(rs, StepSize, Object);
+									Object.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - Object.PositionX());
+								if (size < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_catch += final_distance;
+									trials_catch += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
 						}
-						final_distance = fabs(Agent.PositionX() - Object.PositionX());
-						if (size < BodySize){
-							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-						}
-						else {
-							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
-						}
-						trials += 1;
-						fit += final_distance;
 					}
 				}
 			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fcatch << fit_catch/trials_catch << " ";
+			favoid << fit_avoid/trials_avoid << " ";
 		}
+		ftotal << endl;
+		fcatch << endl;
+		favoid << endl;
 	}
-	fit = fit/trials;
-	return fit;
+	ftotal.close();
+	fcatch.close();
+	favoid.close();
 }
 
 // - - - - - - - - - - - - - - - - - -
@@ -709,9 +799,9 @@ int main (int argc, const char* argv[]) {
 
 	// TASK 2: Object-size Categorization
 	s.SetSearchTerminationFunction(NULL);
-	//s.SetEvaluationFunction(CircleSizeCategorization); #B
-	//s.SetEvaluationFunction(PerceiveAffordance); #A
-	s.SetEvaluationFunction(MultipleTasks);//C
+	s.SetEvaluationFunction(CircleSizeCategorization);//B
+	//s.SetEvaluationFunction(PerceiveAffordance); //A
+	//s.SetEvaluationFunction(MultipleTasks);//C
 	s.ExecuteSearch();
 
 	#ifdef PRINTTOFILE
@@ -723,7 +813,6 @@ int main (int argc, const char* argv[]) {
 #else
 int main (int argc, const char* argv[])
 {
-
 	cout << VectSize << endl;
 	RandomState rs;
 	long seed = static_cast<long>(time(NULL));
@@ -735,6 +824,8 @@ int main (int argc, const char* argv[])
 	BestIndividualFile >> bestVector;
 	testCircleSizeCategorization(bestVector, rs);
 	testPerceiveAffordance(bestVector, rs);
+	CircleSizeCategorizationConnectionLesions(bestVector, rs);
+	PerceiveAffordanceConnectionLesions(bestVector, rs);
 	return 0;
 }
 #endif
