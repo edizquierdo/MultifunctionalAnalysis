@@ -150,10 +150,10 @@ def test_efc():
 if __name__ == "__main__":
     test_efc()
 
-    # analysis args
-    data_dir = "../AnalysisData/best_categ_pass_agent"
-    #data_dir = "../AnalysisData/best_offset"
-    task_name = "B"
-    subtask_name = "*"  # use "*" for all subtasks
-    num_neurons = 5
-    fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
+#     # analysis args
+#     data_dir = "../AnalysisData/best_categ_pass_agent"
+#     #data_dir = "../AnalysisData/best_offset"
+#     task_name = "B"
+#     subtask_name = "*"  # use "*" for all subtasks
+#     num_neurons = 5
+#     fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
