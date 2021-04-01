@@ -11,7 +11,7 @@ def mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=T
     # information about subtask in time
     """
     # one neuron at a time
-    mis = []
+    miss = []
     for ni in range(num_neurons):
         relevant_files = "{}_{}_n{}.dat".format(task_name, subtask_name, ni + 1)
         print(relevant_files)
@@ -47,6 +47,8 @@ def mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=T
             mi = it.mutual_info([0, 1])
             mis.append(mi)
 
+        miss.append(mis)
+
         if show:
             color = np.random.rand(3)
             plt.subplot(num_neurons, 1, ni + 1)
@@ -59,7 +61,7 @@ def mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=T
         plt.tight_layout()
         plt.show()
 
-    return mis
+    return np.array(miss)
 
 
 def mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True):
@@ -112,25 +114,41 @@ def mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=
 
 if __name__ == "__main__":
     # analysis args
-    # data_dir = "../AnalysisData/best_categ_pass_agent"
-    data_dir = "../AnalysisData/best_offset"
+    data_dir = "../AnalysisData/best_categ_pass_agent"
+    # data_dir = "../AnalysisData/best_offset"
     task_name = "B"
     num_neurons = 5
 
-    # analyze combine network across subtasks
-    print("\nAnalyze combine network across subtasks")
-    subtask_name = "*"  # "all subtasks"
-    mis = mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=False)
-    plt.figure()
-    plt.scatter(np.arange(1, num_neurons + 1), mis, color="k")
-    plt.title("Total MI about subtask")
-    plt.xlabel("neuron #")
-    plt.ylabel("MI")
+    # # analyze combine network across subtasks
+    # print("\nAnalyze combine network across subtasks")
+    # subtask_name = "*"  # "all subtasks"
+    # mis = mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=False)
+    # plt.figure()
+    # plt.scatter(np.arange(1, num_neurons + 1), mis, color="k")
+    # plt.title("Total MI about subtask")
+    # plt.xlabel("neuron #")
+    # plt.ylabel("MI")
+    #
+    # # in time across subtasks
+    # print("\nIn time across subtasks")
+    # subtask_name = "*"
+    # plt.figure()
+    # mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True)
+    #
+    # plt.show()
 
-    # in time across subtasks
-    print("\nIn time across subtasks")
-    subtask_name = "*"
-    plt.figure()
-    mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=True)
 
-    plt.show()
+    subtasks = {"A": ["*"], "B": ["*"], "*": ["*"]}
+    for task_name in "AB*":
+        for subtask_name in subtasks[task_name]:
+            print(task_name + " - " + subtask_name)
+            mis_tavg = mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=False)
+            mis_inT = mi_inT_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=False)
+
+            if task_name == "*":
+                task_name = "both"
+            if subtask_name == "*":
+                subtask_name = "both"
+            np.savetxt(os.path.join(data_dir, "mi_subtask_tavg_{}_{}.dat".format(task_name, subtask_name)), mis_tavg)
+            np.savetxt(os.path.join(data_dir, "mi_subtask_inT_{}_{}.dat".format(task_name, subtask_name)), mis_inT)
+            print("")
