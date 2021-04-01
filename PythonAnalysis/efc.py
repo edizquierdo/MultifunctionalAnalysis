@@ -44,13 +44,14 @@ def efc(data, num_clusters, show):
     node_pairs = []
 
     # z-normalize
-    # data = data.T
-    # means = np.mean(data, axis=1)
-    # stds = np.std(data, axis=1)
-    # print(means, stds)
-    #
-    # data = (data - means) / stds
-    # data = data.T
+    data = data.T
+    means = np.mean(data, axis=1)
+    stds = np.std(data, axis=1)
+    print(means.shape, stds.shape, data.shape)
+    data = (data.T - means) / stds ### Eduardo
+    #data = (data - means) / stds
+    #data = data.T
+    print(data.shape)
 
     # edge time series
     edge_ts = []
