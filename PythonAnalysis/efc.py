@@ -142,7 +142,11 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
 
 
 def test_efc():
-    data_file = "../AnalysisData/ts.csv"
+    data_file = "../AnalysisData/ets_short.csv"
+    data = np.loadtxt(data_file, delimiter=",").T
+    print(data.shape)
+    imshow(data, "time", "Node pairs", "Edge time series X", "auto")
+    data_file = "../AnalysisData/ts_short.csv"
     data = np.loadtxt(data_file, delimiter=",").T
     efc(data, 10, True)
 
