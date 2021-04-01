@@ -14,8 +14,9 @@ def mi_inT_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True
         plt.figure()
 
     # one neuron at a time
-    mis = []
+    miss = []
     for ni in range(num_neurons):
+        mis = []
         relevant_files = "{}_{}_n{}.dat".format(task_name, subtask_name, ni + 1)
         print(relevant_files)
 
@@ -52,6 +53,8 @@ def mi_inT_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True
             mi = it.mutual_info([0, 1])
             mis.append(mi)
 
+        miss.append(mis)
+
         if show:
             color = np.random.rand(3)
             plt.subplot(num_neurons, 1, ni + 1)
@@ -64,7 +67,7 @@ def mi_inT_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True
         plt.tight_layout()
         plt.show()
 
-    return mis
+    return np.array(miss)
 
 
 def mi_Tavg_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True):
