@@ -6,14 +6,12 @@ import matplotlib.pyplot as plt
 import infotheory
 
 
-def mi_inT_neuron_size(data_dir, task_name, num_neurons, show=True):
+def mi_inT_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True):
     """
     # information about subtask in time
     """
     if show:
         plt.figure()
-    task_name = task_name or "*"
-    subtask_name = "*"
 
     # one neuron at a time
     mis = []
@@ -75,8 +73,6 @@ def mi_Tavg_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=Tru
     """
     if show:
         plt.figure()
-    task_name = task_name or "*"
-    subtask_name = subtask_name or "*"
 
     # one neuron at a time
     mis = []
@@ -123,13 +119,21 @@ def mi_Tavg_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=Tru
 
 if __name__ == "__main__":
     # analysis args
-    #data_dir = "../AnalysisData/best_categ_pass_agent"
-    data_dir = "../AnalysisData/best_offset"
-    task_name = "B"
-    subtask_name = "*"  # "all subtasks"
+    data_dir = "../AnalysisData/best_categ_pass_agent"
+    # data_dir = "../AnalysisData/best_offset"
     num_neurons = 5
 
-    mis = mi_Tavg_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=True)
-    print("mi_Tavg_neuron_size:{}\n".format(mis))
+    subtasks = {"A": ["pass", "avoid", "*"], "B": ["catch", "avoid", "*"], "*": ["*"]}
+    for task_name in "AB*":
+        for subtask_name in subtasks[task_name]:
+            print(task_name + " - " + subtask_name)
+            mis_tavg = mi_Tavg_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=False)
+            mis_inT = mi_inT_neuron_size(data_dir, task_name, subtask_name, num_neurons, show=False)
 
-    mi_inT_neuron_size(data_dir, task_name, num_neurons, show=True)
+            if task_name == "*":
+                task_name = "both"
+            if subtask_name == "*":
+                subtask_name = "both"
+            np.savetxt(os.path.join(data_dir, "mi_size_tavg_{}_{}.dat".format(task_name, subtask_name)), mis_tavg)
+            np.savetxt(os.path.join(data_dir, "mi_size_inT_{}_{}.dat".format(task_name, subtask_name)), mis_inT)
+            print("")
