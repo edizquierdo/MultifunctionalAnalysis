@@ -44,21 +44,25 @@ def efc(data, num_clusters, show):
     node_pairs = []
 
     # z-normalize
-    data = data.T
-    means = np.mean(data, axis=1)
-    stds = np.std(data, axis=1)
-    print(means.shape, stds.shape, data.shape)
-    data = (data.T - means) / stds ### Eduardo
-    #data = (data - means) / stds
-    #data = data.T
-    print(data.shape)
+    data = (data - np.mean(data))/np.std(data) ### Eduardo
+    # data = data.T
+    # means = np.mean(data, axis=1)
+    # stds = np.std(data, axis=1)
+    # print(means.shape, stds.shape, data.shape)
+    # data = (data.T - means) / stds  ### Eduardo
+    # #data = (data - means) / stds   ### Eduardo
+    # #data = data.T                  ### Eduardo
+    # print(data.shape)
 
     # edge time series
     edge_ts = []
     for i, di in enumerate(data):
-        for j, dj in enumerate(data[i:]):
-            edge_ts.append(di * dj)
-            node_pairs.append([i, i + j])
+        #for j, dj in enumerate(data[i:]):  ### Eduardo
+        for j, dj in enumerate(data):       ### Eduardo
+            if i<j:                         ### Eduardo
+                edge_ts.append(di * dj)
+                node_pairs.append([i, j])   ### Eduardo
+                #node_pairs.append([i, i + j])
     edge_ts = np.array(edge_ts)
     node_pairs = np.array(node_pairs)
     print(np.shape(edge_ts))
@@ -143,11 +147,11 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
 
 
 def test_efc():
-    data_file = "../AnalysisData/ets_short.csv"
-    data = np.loadtxt(data_file, delimiter=",").T
-    print(data.shape)
-    imshow(data, "time", "Node pairs", "Edge time series X", "auto")
-    data_file = "../AnalysisData/ts_short.csv"
+    # data_file = "../AnalysisData/ets_shortest.csv"
+    # data = np.loadtxt(data_file, delimiter=",").T
+    # print(data.shape)
+    # imshow(data, "time", "Node pairs", "Edge time series X", "auto")
+    data_file = "../AnalysisData/ts.csv"
     data = np.loadtxt(data_file, delimiter=",").T
     efc(data, 10, True)
 
