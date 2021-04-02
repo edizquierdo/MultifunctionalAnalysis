@@ -40,11 +40,13 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
             mi = it.mutual_info([0, 1])
             mis[ni, nj] = mi
             mis[nj, ni] = mi
-
+    
+    mis /= 4.25 # max across all conditions of task and subtask -- need a better method
+    
     # plot
     if show:
         plt.figure()
-        plt.imshow(mis, aspect="equal", origin="lower")
+        plt.imshow(mis, aspect="equal", origin="lower", vmin=0, vmax=1)
         plt.xlabel("Neuron #")
         plt.ylabel("Neuron #")
         plt.xticks(np.arange(num_neurons), np.arange(1, num_neurons + 1))
