@@ -25,8 +25,8 @@ def find_best_K(points, kmax):
     return np.argmin(sse) + 1
 
 
-def imshow(dat, xlabel, ylabel, title, aspect, block=False):
-    plt.imshow(dat, origin="lower", aspect=aspect)
+def imshow(dat, xlabel, ylabel, title, aspect, vmin=None, vmax=None, block=False):
+    plt.imshow(dat, origin="lower", aspect=aspect, vmin=vmin, vmax=vmax)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
@@ -57,7 +57,7 @@ def efc(data, num_clusters, show):
     node_pairs = np.array(node_pairs)
     print(np.shape(edge_ts), np.min(data), np.max(data))
 
-    if show:
+    if False: #show:
         plt.figure(figsize=[8, 4])
         imshow(edge_ts[:, :ntimepoints], "time", "Node pairs", "Edge time series", "auto")
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs]
@@ -81,10 +81,11 @@ def efc(data, num_clusters, show):
         sorted_inds = np.argsort(ci)
         tmp_efc = [e[sorted_inds] for e in efc[sorted_inds]]
         plt.figure()
-        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal")
+        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal", vmin=-1, vmax=1)
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
         plt.xticks(np.arange(len(efc)), ticks)
         plt.yticks(np.arange(len(efc)), ticks)
+        return
 
     # map back to nodes
     ind = 0
@@ -170,7 +171,7 @@ if __name__ == "__main__":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "efc_ets_{}_{}.pdf".format(task_name, subtask_name))
+            fname = os.path.join(data_dir, "efc_efc_{}_{}.pdf".format(task_name, subtask_name))
             plt.savefig(fname)
             plt.close()
             print("")
