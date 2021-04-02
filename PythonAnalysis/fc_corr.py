@@ -39,7 +39,7 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
         fc.append(_fc_row)
 
     if show:
-        plt.imshow(fc, aspect="equal", origin="lower", vmin=-1, vmax=1, cmap="bwr")
+        plt.imshow(fc, aspect="equal", origin="lower", vmin=-1, vmax=1, cmap="Spectral")
         plt.colorbar()
         plt.xlabel("neuron #")
         plt.ylabel("neuron #")
