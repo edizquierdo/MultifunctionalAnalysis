@@ -47,14 +47,30 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
         plt.imshow(mis, aspect="equal", origin="lower")
         plt.xlabel("Neuron #")
         plt.ylabel("Neuron #")
+        plt.xticks(np.arange(num_neurons), np.arange(1, num_neurons + 1))
+        plt.yticks(np.arange(num_neurons), np.arange(1, num_neurons + 1))
         plt.colorbar()
-        plt.show()
+        plt.tight_layout()
+        # plt.show()
 
 
 if __name__ == "__main__":
     # analysis args
     data_dir = "../AnalysisData/best_categ_pass_agent"
-    task_name = "B"
-    subtask_name = "catch"  # "all subtasks"
     num_neurons = 5
-    fc_mi(data_dir, task_name, subtask_name, num_neurons)
+
+    subtasks = {"A": ["pass", "avoid", "*"], "B": ["catch", "avoid", "*"], "*": ["*"]}
+    for task_name in "AB*":
+        for subtask_name in subtasks[task_name]:
+            print(task_name + " - " + subtask_name)
+            plt.figure(figsize=[4, 3])
+            fc_mi(data_dir, task_name, subtask_name, num_neurons)
+
+            if task_name == "*":
+                task_name = "both"
+            if subtask_name == "*":
+                subtask_name = "both"
+            fname = os.path.join(data_dir, "fc_mi_{}_{}.pdf".format(task_name, subtask_name))
+            plt.savefig(fname)
+            plt.close()
+            print("")
