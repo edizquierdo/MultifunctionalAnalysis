@@ -45,7 +45,6 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
     
     # plot
     if show:
-        plt.figure()
         plt.imshow(mis, aspect="equal", origin="lower", vmin=0, vmax=1)
         plt.xlabel("Neuron #")
         plt.ylabel("Neuron #")
