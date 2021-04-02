@@ -25,8 +25,8 @@ def find_best_K(points, kmax):
     return np.argmin(sse) + 1
 
 
-def imshow(dat, xlabel, ylabel, title, aspect, vmin=None, vmax=None, block=False):
-    plt.imshow(dat, origin="lower", aspect=aspect, vmin=vmin, vmax=vmax)
+def imshow(dat, xlabel, ylabel, title, aspect, vmin=None, vmax=None, cmap=None, block=False):
+    plt.imshow(dat, origin="lower", aspect=aspect, vmin=vmin, vmax=vmax, cmap=cmap)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
@@ -81,7 +81,7 @@ def efc(data, num_clusters, show):
         sorted_inds = np.argsort(ci)
         tmp_efc = [e[sorted_inds] for e in efc[sorted_inds]]
         plt.figure()
-        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal", vmin=-1, vmax=1)
+        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal", vmin=-1, vmax=1, cmap="PuOr")
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
         plt.xticks(np.arange(len(efc)), ticks)
         plt.yticks(np.arange(len(efc)), ticks)
