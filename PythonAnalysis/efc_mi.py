@@ -43,6 +43,8 @@ def efc_mi(data_dir, task_name, subtask_name, show=True):
         plt.xticks(np.arange(len(efc_mat)), ticks)
         plt.yticks(np.arange(len(efc_mat)), ticks)
 
+    return efc_mat[np.triu_indices(len(efc_mat), k=1)]
+
 
 if __name__ == "__main__":
     # analysis args
@@ -54,13 +56,14 @@ if __name__ == "__main__":
         for subtask_name in subtasks[task_name]:
             print(task_name + " - " + subtask_name)
             # plt.figure(figsize=[4, 3])
-            efc_mi(data_dir, task_name, subtask_name)
+            efc_mat = efc_mi(data_dir, task_name, subtask_name)
 
             if task_name == "*":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "efc_mi_{}_{}.pdf".format(task_name, subtask_name))
-            plt.savefig(fname)
+            fname = os.path.join(data_dir, "efc_mi_{}_{}".format(task_name, subtask_name))
+            np.savetxt(fname + ".dat", efc_mat)
+            plt.savefig(fname + ".pdf")
             plt.close()
             print("")

@@ -41,7 +41,7 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
             mis[ni, nj] = mi
             mis[nj, ni] = mi
     print("Max = {}".format(np.max(mis)))
-    mis /= 4.10439820533 # max across all conditions of task and subtask -- need a better method
+    mis /= 4.10439820533  # max across all conditions of task and subtask -- need a better method
 
     # plot
     if show:

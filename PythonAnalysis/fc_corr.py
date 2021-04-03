@@ -56,6 +56,7 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
     fc = np.array(fc)
     return fc[np.triu_indices(num_neurons, k=1)]
 
+
 if __name__ == "__main__":
     # analysis args
     data_dir = "../AnalysisData/best_categ_pass_agent"
@@ -74,7 +75,7 @@ if __name__ == "__main__":
             if subtask_name == "*":
                 subtask_name = "both"
             fname = os.path.join(data_dir, "fc_corr_{}_{}".format(task_name, subtask_name))
-            np.savetxt(fname+".dat", fc)
-            plt.savefig(fname+".pdf")
+            np.savetxt(fname + ".dat", fc)
+            plt.savefig(fname + ".pdf")
             plt.close()
             print("")

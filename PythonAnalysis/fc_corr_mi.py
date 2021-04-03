@@ -36,6 +36,9 @@ def fc_corr_mi(data_dir, task_name, subtask_name, show=True):
         plt.tight_layout()
         # plt.show()
 
+    fc = np.array(fc)
+    return fc[np.triu_indices(num_neurons, k=1)]
+
 
 if __name__ == "__main__":
     # analysis args
@@ -47,13 +50,14 @@ if __name__ == "__main__":
         for subtask_name in subtasks[task_name]:
             print(task_name + " - " + subtask_name)
             plt.figure(figsize=[4, 3])
-            fc_corr_mi(data_dir, task_name, subtask_name)
+            fc = fc_corr_mi(data_dir, task_name, subtask_name)
 
             if task_name == "*":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "fc_corr_mi_{}_{}.pdf".format(task_name, subtask_name))
-            plt.savefig(fname)
+            fname = os.path.join(data_dir, "fc_corr_mi_{}_{}".format(task_name, subtask_name))
+            np.savetxt(fname + ".dat", fc)
+            plt.savefig(fname + ".pdf")
             plt.close()
             print("")

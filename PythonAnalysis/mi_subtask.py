@@ -137,7 +137,6 @@ if __name__ == "__main__":
     #
     # plt.show()
 
-
     subtasks = {"A": ["*"], "B": ["*"], "*": ["*"]}
     for task_name in "AB*":
         for subtask_name in subtasks[task_name]:
