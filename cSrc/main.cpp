@@ -38,8 +38,8 @@ const double MINSIZE = 20.0; // Diameter of agent is 30
 const double MAXSIZE = 40.0;
 const double SIZESTEP = 1.0; //0.5;
 // Pos
-const double MINPOS = 5; //-30
-const double MAXPOS = 30;
+const double MINPOS = -5; //-30
+const double MAXPOS = 5;
 const double POSSTEP = 5; //5;
 
 const double REPS = 1;
@@ -824,8 +824,8 @@ int main (int argc, const char* argv[])
 	BestIndividualFile >> bestVector;
 	testCircleSizeCategorization(bestVector, rs);
 	testPerceiveAffordance(bestVector, rs);
-	CircleSizeCategorizationConnectionLesions(bestVector, rs);
-	PerceiveAffordanceConnectionLesions(bestVector, rs);
+	// CircleSizeCategorizationConnectionLesions(bestVector, rs);
+	// PerceiveAffordanceConnectionLesions(bestVector, rs);
 	return 0;
 }
 #endif
