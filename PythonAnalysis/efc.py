@@ -35,18 +35,9 @@ def imshow(dat, xlabel, ylabel, title, aspect, vmin=None, vmax=None, cmap=None, 
     # plt.show(block=block)
 
 
-def efc(data, num_clusters, show):
-    """
-    data: N x time
-    """
-    nneurons, ntimepoints = data.shape
-    data = np.reshape(data, [nneurons, -1])
-    node_pairs = []
-
-    # z-normalize
-    data = (data - np.mean(data)) / np.std(data)
-
+def find_edge_ts(data):
     # edge time series
+    node_pairs = []
     edge_ts = []
     for i, di in enumerate(data):
         for j, dj in enumerate(data):
@@ -55,9 +46,34 @@ def efc(data, num_clusters, show):
                 node_pairs.append([i, j])
     edge_ts = np.array(edge_ts)
     node_pairs = np.array(node_pairs)
-    print(np.shape(edge_ts), np.min(data), np.max(data))
+    print(np.shape(edge_ts), np.min(edge_ts), np.max(edge_ts))
+    return edge_ts, node_pairs
 
-    if False: #show:
+
+def efc_from_edge_ts(edge_ts):
+    inner_prod = np.matmul(edge_ts, edge_ts.T)
+    print("inner_prod", inner_prod.shape)
+    sqrt_var = np.sqrt(np.diagonal(inner_prod))
+    sqrt_var = np.expand_dims(sqrt_var, 1)
+    norm_mat = np.matmul(sqrt_var, sqrt_var.T)
+    efc = inner_prod / norm_mat
+    return efc
+
+
+def efc(data, num_clusters, show):
+    """
+    data: N x time
+    """
+    nneurons, ntimepoints = data.shape
+    data = np.reshape(data, [nneurons, -1])
+
+    # z-normalize
+    data = (data - np.mean(data)) / np.std(data)
+
+    # edge time series
+    edge_ts, node_pairs = find_edge_ts(data)
+
+    if False:  # show:
         plt.figure(figsize=[8, 4])
         imshow(edge_ts[:, :ntimepoints], "time", "Node pairs", "Edge time series", "auto")
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs]
@@ -65,12 +81,7 @@ def efc(data, num_clusters, show):
         return
 
     # efc
-    inner_prod = np.matmul(edge_ts, edge_ts.T)
-    print("inner_prod", inner_prod.shape)
-    sqrt_var = np.sqrt(np.diagonal(inner_prod))
-    sqrt_var = np.expand_dims(sqrt_var, 1)
-    norm_mat = np.matmul(sqrt_var, sqrt_var.T)
-    efc = inner_prod / norm_mat
+    efc = efc_from_edge_ts(edge_ts)
 
     # community detection
     # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
@@ -81,7 +92,16 @@ def efc(data, num_clusters, show):
         sorted_inds = np.argsort(ci)
         tmp_efc = [e[sorted_inds] for e in efc[sorted_inds]]
         plt.figure()
-        imshow(tmp_efc, "Node pairs", "Node pairs", "Edge-centric Functional Network", "equal", vmin=-1, vmax=1, cmap="PuOr")
+        imshow(
+            tmp_efc,
+            "Node pairs",
+            "Node pairs",
+            "Edge-centric Functional Network",
+            "equal",
+            vmin=-1,
+            vmax=1,
+            cmap="coolwarm",
+        )
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
         plt.xticks(np.arange(len(efc)), ticks)
         plt.yticks(np.arange(len(efc)), ticks)

@@ -5,6 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def corr(x, y):
+    num = np.sum(x * y)
+    den = np.sqrt(np.sum(x ** 2) * np.sum(y ** 2))
+    return num / den
+
+
 def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=True):
     all_neuron_dat = []
     # one neuron at a time
@@ -33,9 +39,7 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
         _fc_row = []
         ni_prod = all_neuron_diffs
         for nj in range(num_neurons):
-            fc_num = np.sum(all_neuron_diffs[ni] * all_neuron_diffs[nj])
-            fc_den = np.sqrt(np.sum(all_neuron_diffs[ni] ** 2) * np.sum(all_neuron_diffs[nj] ** 2))
-            _fc_row.append(fc_num / fc_den)
+            _fc_row.append(corr(all_neuron_diffs[ni], all_neuron_diffs[nj]))
         fc.append(_fc_row)
 
     if show:
