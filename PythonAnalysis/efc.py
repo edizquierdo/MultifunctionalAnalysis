@@ -85,11 +85,11 @@ def efc(data, num_clusters, show):
 
     # community detection
     # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-    best_k = find_best_K(efc_mat, 2)
+    best_k = 3
     ci = KMeans(n_clusters=best_k).fit(efc_mat).labels_
 
     if show:
-        sorted_inds = np.arange(len(ci))  # np.argsort(ci)
+        sorted_inds = np.argsort(ci)
         tmp_efc = [e[sorted_inds] for e in efc_mat[sorted_inds]]
         plt.figure()
         imshow(
@@ -191,7 +191,7 @@ if __name__ == "__main__":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "efc_efc_{}_{}_unclustered".format(task_name, subtask_name))
+            fname = os.path.join(data_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
             np.savetxt(fname + ".dat", efc_mat)
             plt.savefig(fname + ".pdf")
             plt.close()

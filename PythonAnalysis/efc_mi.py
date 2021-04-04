@@ -4,6 +4,8 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.cluster import KMeans
+
 import efc
 
 
@@ -27,10 +29,33 @@ def efc_mi(data_dir, task_name, subtask_name, show=True):
     # efc
     efc_mat = efc.efc_from_edge_ts(edge_ts)
 
+    # if show:
+    #     plt.figure()
+    #     efc.imshow(
+    #         efc_mat,
+    #         "Node pairs",
+    #         "Node pairs",
+    #         "Edge-centric Functional Network",
+    #         "equal",
+    #         vmin=-1,
+    #         vmax=1,
+    #         cmap="PuOr",
+    #     )
+    #     ticks = ["{}-{}".format(n[0]+1, n[1]+1) for n in node_pairs]
+    #     plt.xticks(np.arange(len(efc_mat)), ticks)
+    #     plt.yticks(np.arange(len(efc_mat)), ticks)
+
+    # community detection
+    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+    best_k = 2
+    ci = KMeans(n_clusters=best_k).fit(efc_mat).labels_
+
     if show:
+        sorted_inds = np.argsort(ci)
+        tmp_efc = [e[sorted_inds] for e in efc_mat[sorted_inds]]
         plt.figure()
         efc.imshow(
-            efc_mat,
+            tmp_efc,
             "Node pairs",
             "Node pairs",
             "Edge-centric Functional Network",
@@ -39,7 +64,7 @@ def efc_mi(data_dir, task_name, subtask_name, show=True):
             vmax=1,
             cmap="PuOr",
         )
-        ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs]
+        ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
         plt.xticks(np.arange(len(efc_mat)), ticks)
         plt.yticks(np.arange(len(efc_mat)), ticks)
 
