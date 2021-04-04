@@ -3,51 +3,16 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
 
-fig, ax = plt.subplots()
 
-bar_heights = [4, 5, 6, 3, 7, 5]
-save_filename = "./test.pdf"
-oc_approach = [r, g, b, 1]
-oc_avoid = [r, g, b, 1]
-pa_approach = [r, g, b, 1]
-pa_avoid = [r, g, b, 1]
-
-color_maps = []
-
-# OC
-_cm_list = []
-_cm_list += [oc_approach + [i] for i in np.linspace(1, 0, 128)]
-_cm_list += [oc_avoid + [i] for i in np.linspace(0, 1, 128)]
-cm = ListedColormap(_cm_list)
-color_maps.append(cm)
-
-# PA
-_cm_list = []
-_cm_list += [pa_approach + [i] for i in np.linspace(1, 0, 128)]
-_cm_list += [pa_avoid + [i] for i in np.linspace(0, 1, 128)]
-cm = ListedColormap(_cm_list)
-color_maps.append(cm)
-
-# Avoid
-_cm_list = []
-_cm_list += [pa_avoid + [i] for i in np.linspace(1, 0, 128)]
-_cm_list += [oc_avoid + [i] for i in np.linspace(0, 1, 128)]
-cm = ListedColormap(_cm_list)
-color_maps.append(cm)
-
-# Approach
-_cm_list = []
-_cm_list += [pa_approach + [i] for i in np.linspace(1, 0, 128)]
-_cm_list += [oc_approach + [i] for i in np.linspace(0, 1, 128)]
-cm = ListedColormap(_cm_list)
-color_maps.append(cm)
+def make_cmap(from_color, to_color):
+    from_color = np.array(from_color)
+    to_color = np.array(to_color)
+    _cm_list = [(to_color * i + from_color * (1 - i)) for i in np.linspace(0, 1, 256)]
+    cm = ListedColormap(_cm_list)
+    return cm
 
 
-plt.figure(figsize=[4, 3])
-bar = ax.bar(np.arange(1, len(bar_heights) + 1), bar_heights)
-
-
-def gradientbars(bars):
+def gradientbars(bars, color_maps):
     grad = np.atleast_2d(np.linspace(0, 1, 256)).T
     ax = bars[0].axes
     lim = ax.get_xlim() + ax.get_ylim()
@@ -60,6 +25,42 @@ def gradientbars(bars):
     ax.axis(lim)
 
 
-gradientbars(bar)
+FC_Pearson = [0.127704, 0.06499873157680602, 0.171356, 0.07095927879284398]
+FC_NA = [1.29903551955000642, 1.51367327519719448, 0.735576115263650184, 1.7213432648094396]
+FC_MI = [1.12556, 0.6416288822013887, 0.940723, 0.8432075108869090]
+N_VAR = [0.295563, 0.297003, 0.300797, 0.293771]
+N_MI = [0.203838252678301902, 0.188140514752626004, 0.181514443232673108, 0.18092136629698959]
+
+bar_heights = N_MI
+save_filename = "./N_MI.pdf"
+oc_approach = [214.0 / 255, 158.0 / 255, 64.0 / 255]
+oc_avoid = [101.0 / 255, 128.0 / 255, 177.0 / 255]
+pa_avoid = [150.0 / 255, 175.0 / 255, 72.0 / 255]
+pa_approach = [201.0 / 255, 104.0 / 255, 95.0 / 255]
+
+color_maps = []
+
+# OC
+color_maps.append(make_cmap(oc_avoid, oc_approach))
+
+# PA
+color_maps.append(make_cmap(pa_avoid, pa_approach))
+
+# Avoid
+color_maps.append(make_cmap(oc_avoid, pa_avoid))
+
+# Approach
+color_maps.append(make_cmap(oc_approach, pa_approach))
+
+
+plt.figure(figsize=[4, 2])
+ax = plt.gca()
+bar_plt = ax.bar(np.arange(1, len(bar_heights) + 1), bar_heights)
+gradientbars(bar_plt, color_maps)
+
+plt.xticks([1, 2, 3, 4], ["OC", "PA", "Aviod", "Approach"])
+plt.ylabel("Euclidean distance")
+
+plt.tight_layout()
 plt.savefig(save_filename)
 plt.show()
