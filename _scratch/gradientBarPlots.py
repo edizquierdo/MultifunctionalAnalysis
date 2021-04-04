@@ -31,36 +31,36 @@ FC_MI = [1.12556, 0.6416288822013887, 0.940723, 0.8432075108869090]
 N_VAR = [0.295563, 0.297003, 0.300797, 0.293771]
 N_MI = [0.203838252678301902, 0.188140514752626004, 0.181514443232673108, 0.18092136629698959]
 
-bar_heights = N_MI
-save_filename = "./N_MI.pdf"
-oc_approach = [214.0 / 255, 158.0 / 255, 64.0 / 255]
-oc_avoid = [101.0 / 255, 128.0 / 255, 177.0 / 255]
-pa_avoid = [150.0 / 255, 175.0 / 255, 72.0 / 255]
-pa_approach = [201.0 / 255, 104.0 / 255, 95.0 / 255]
+for metric in ["FC_Pearson", "FC_NA", "FC_MI", "N_VAR", "N_MI"]:
+    bar_heights = eval(metric)
+    save_filename = "./{}.pdf".format(metric)
+    oc_approach = [214.0 / 255, 158.0 / 255, 64.0 / 255]
+    oc_avoid = [101.0 / 255, 128.0 / 255, 177.0 / 255]
+    pa_avoid = [150.0 / 255, 175.0 / 255, 72.0 / 255]
+    pa_approach = [201.0 / 255, 104.0 / 255, 95.0 / 255]
 
-color_maps = []
+    color_maps = []
 
-# OC
-color_maps.append(make_cmap(oc_avoid, oc_approach))
+    # OC
+    color_maps.append(make_cmap(oc_avoid, oc_approach))
 
-# PA
-color_maps.append(make_cmap(pa_avoid, pa_approach))
+    # PA
+    color_maps.append(make_cmap(pa_avoid, pa_approach))
 
-# Avoid
-color_maps.append(make_cmap(oc_avoid, pa_avoid))
+    # Avoid
+    color_maps.append(make_cmap(oc_avoid, pa_avoid))
 
-# Approach
-color_maps.append(make_cmap(oc_approach, pa_approach))
+    # Approach
+    color_maps.append(make_cmap(oc_approach, pa_approach))
 
+    plt.figure(figsize=[4, 2])
+    ax = plt.gca()
+    bar_plt = ax.bar(np.arange(1, len(bar_heights) + 1), bar_heights)
+    gradientbars(bar_plt, color_maps)
 
-plt.figure(figsize=[4, 2])
-ax = plt.gca()
-bar_plt = ax.bar(np.arange(1, len(bar_heights) + 1), bar_heights)
-gradientbars(bar_plt, color_maps)
+    plt.xticks([1, 2, 3, 4], ["OC", "PA", "Avoid", "Approach"])
+    plt.ylabel("Euclidean distance")
 
-plt.xticks([1, 2, 3, 4], ["OC", "PA", "Aviod", "Approach"])
-plt.ylabel("Euclidean distance")
-
-plt.tight_layout()
-plt.savefig(save_filename)
-plt.show()
+    plt.tight_layout()
+    plt.savefig(save_filename)
+    # plt.show()
