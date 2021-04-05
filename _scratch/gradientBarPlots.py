@@ -33,34 +33,50 @@ N_MI = [0.203838252678301902, 0.188140514752626004, 0.181514443232673108, 0.1809
 eFC_NA = [3.7208923420679311, 3.5054306725923299, 4.2495844364159963, 2.7193499190482055]
 eFC_MI = [3.1743099624548748, 3.259579205193213, 3.22450831281356, 3.2718570789137677]
 
-for metric in ["FC_Pearson", "FC_NA", "FC_MI", "N_VAR", "N_MI", "eFC_NA", "eFC_MI"]:
+N_VAR = [0.295563, 0.297003, 0.300797, 0.293771, 0.295352, 0.300797]
+N_MI = [0.203838252678301902, 0.188140514752626004, 0.181514443232673108, 0.18092136629698959, 0.154778121187173325, 0.181514443232673108]
+FC_NA = [1.29903551955000642, 1.51367327519719448, 0.735576115263650184, 1.7213432648094396, 1.45635474373872936, 0.735576115263650184]
+FC_MI = [1.12556, 0.6416288822013887, 0.940723, 0.8432075108869090, 1.27641,  0.940723]
+
+oc_approach = [214.0 / 255, 158.0 / 255, 64.0 / 255]
+oc_avoid = [101.0 / 255, 128.0 / 255, 177.0 / 255]
+pa_avoid = [150.0 / 255, 175.0 / 255, 72.0 / 255]
+pa_approach = [201.0 / 255, 104.0 / 255, 95.0 / 255]
+
+color_maps = []
+
+# OC
+color_maps.append(make_cmap(oc_avoid, oc_approach))
+
+# PA
+color_maps.append(make_cmap(pa_avoid, pa_approach))
+
+# Avoid
+color_maps.append(make_cmap(oc_avoid, pa_avoid))
+
+# Approach
+color_maps.append(make_cmap(oc_approach, pa_approach))
+
+# Smaller
+color_maps.append(make_cmap(oc_approach, pa_avoid))
+
+# Larger
+color_maps.append(make_cmap(oc_avoid, pa_approach))
+
+
+
+for metric in ["N_VAR", "N_MI", "FC_NA", "FC_MI"]:
+    #["FC_Pearson", "FC_NA", "FC_MI", "N_VAR", "N_MI", "eFC_NA", "eFC_MI"]:
     bar_heights = eval(metric)
     save_filename = "./{}.pdf".format(metric)
-    oc_approach = [214.0 / 255, 158.0 / 255, 64.0 / 255]
-    oc_avoid = [101.0 / 255, 128.0 / 255, 177.0 / 255]
-    pa_avoid = [150.0 / 255, 175.0 / 255, 72.0 / 255]
-    pa_approach = [201.0 / 255, 104.0 / 255, 95.0 / 255]
 
-    color_maps = []
-
-    # OC
-    color_maps.append(make_cmap(oc_avoid, oc_approach))
-
-    # PA
-    color_maps.append(make_cmap(pa_avoid, pa_approach))
-
-    # Avoid
-    color_maps.append(make_cmap(oc_avoid, pa_avoid))
-
-    # Approach
-    color_maps.append(make_cmap(oc_approach, pa_approach))
 
     plt.figure(figsize=[4, 2])
     ax = plt.gca()
     bar_plt = ax.bar(np.arange(1, len(bar_heights) + 1), bar_heights)
     gradientbars(bar_plt, color_maps)
 
-    plt.xticks([1, 2, 3, 4], ["OC", "PA", "Avoid", "Approach"])
+    plt.xticks([1, 2, 3, 4, 5, 6], ["OC", "PA", "Avoid", "Approach", "Smaller", "Larger"], rotation=30)
     plt.ylabel("Euclidean distance")
 
     plt.tight_layout()
