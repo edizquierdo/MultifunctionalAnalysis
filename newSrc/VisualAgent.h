@@ -33,6 +33,8 @@ class VisualAgent {
 			Rays.SetBounds(1, NumRays);
 			ExternalInput.SetBounds(1,NumRays);
 			ExternalInput.FillContents(0.0);
+			SensorWeight.SetBounds(1,NumRays,1,NumInter);
+			SensorWeight.FillContents(0.0);
 			Reset(ix,iy);
 			NumInter = NumInterNeurons_;
 			NumMotor = NumMotors_;
@@ -62,7 +64,7 @@ class VisualAgent {
 
 		CTRNN NervousSystem;
 		TVector<double> ExternalInput;
-		TMatrix<double> SensorWeights;  //XXX
+		TMatrix<double> SensorWeight;
 
 	private:
 		void ResetRays();

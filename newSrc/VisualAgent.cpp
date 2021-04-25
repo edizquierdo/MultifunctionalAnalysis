@@ -161,8 +161,8 @@ void VisualAgent::SetController(TVector<double> &phen)
   // Weights from Sensor to Inter
   for (int i = 1; i <= H_NumRays - 1; i++){
     for (int j = 1; j <= NumInter; j++){
-      NervousSystem.SensoryWeight(i,j) = phen(k);
-      NervousSystem.SensoryWeight(NumRays-i+1,NumInter-j+1) = phen(k);
+      SensorWeight(i,j) = phen(k);
+      SensorWeight(NumRays-i+1,NumInter-j+1) = phen(k);
       k++;
     }
   }
