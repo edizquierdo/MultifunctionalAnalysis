@@ -333,6 +333,7 @@ void VisualAgent::Step(RandomState &rs, double StepSize, VisualObject &object) {
     ExternalInput[i] = InputGain*(MaxRayLength - Rays[i].length)/MaxRayLength;
     ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
     NervousSystem.SetNeuronExternalInput(i, ExternalInput[i]);
+    // NervousSystem.SetNeuronOutput(i,(MaxRayLength - Rays[i].length)/MaxRayLength);
   }
 
   // Step nervous system

@@ -114,10 +114,10 @@ def mi_Tavg_neuron_subtask(data_dir, task_name, subtask_name, num_neurons, show=
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../AnalysisData/best_categ_pass_agent"
+    data_dir = "../AnalysisData/newagent"
     # data_dir = "../AnalysisData/best_offset"
     task_name = "B"
-    num_neurons = 5
+    num_neurons = 7
 
     # # analyze combine network across subtasks
     # print("\nAnalyze combine network across subtasks")

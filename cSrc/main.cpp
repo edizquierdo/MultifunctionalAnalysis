@@ -17,10 +17,10 @@ const int 		GENS 		 					= 1000;
 // Global constants
 const int			CIRCUITSIZE				= 15;
 const int 		NUMRAYS 					= 7;
-const int 		NUMINTER 					= 5; //15;
+const int 		NUMINTER 					= 7; //3,5,7,9,11,13,15;
 const int 		NUMMOTOR   				= 2;
 const int 		H_NUMRAYS = 4;
-const int 		H_NUMINTER = 3; //8;
+const int 		H_NUMINTER = 4; //2,3,4,5,6,7,8;
 const int 		H_NUMMOTOR = 1;
 
 const double	StepSize					= 0.1;
@@ -34,13 +34,16 @@ const double MINVEL = -3.0;
 const double MAXVEL = -3.0;
 const double VELSTEP = 0.5;
 // Size
-const double MINSIZE = 20.0; // Diameter of agent is 30
-const double MAXSIZE = 40.0;
+const double MINSIZE = 20.0; //20.0; // Diameter of agent is 30
+const double MAXSIZE = 40.0; //40.0;
 const double SIZESTEP = 1.0; //0.5;
 // Pos
-const double MINPOS = -5; //-30
-const double MAXPOS = 5;
-const double POSSTEP = 5; //5;
+const double MINPOS = 1; //5;
+const double MAXPOS = 5; //6; //10;
+const double POSSTEP = 1; //5;
+// Start vertical position of objects
+const double STARTHEIGHT = 240; //275
+const double OBJECTHEIGHT = 30;
 
 const double REPS = 1;
 
@@ -255,7 +258,7 @@ void GenPhenMapping(TVector<double> &gen, TVector<double> &phen)
 // - - - - - - - - - - - - - - - - - -
 // NSF RI 2019
 // Task 1: Perceiving Affordances using Lines as walls
-// 		Gaps between the lines larger than self should be passed through.
+// 		Gaps between the lines larger than self should be approached through.
 //    Gaps between the lines smaller than self should be avoided.
 // - - - - - - - - - - - - - - - - - -
 double PerceiveAffordance(TVector<double> &v, RandomState &rs)
@@ -268,8 +271,8 @@ double PerceiveAffordance(TVector<double> &v, RandomState &rs)
 	phenotype.SetBounds(1, VectSize);
 	GenPhenMapping(v, phenotype);
 	Agent.SetController(phenotype);
-	Line ObjectLeft(0.0,275.0,-3,0.0,30);
-	Line ObjectRight(0.0,275.0,-3,0.0,30);
+	Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+	Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 	{
 		if (pos != 0)
@@ -282,11 +285,11 @@ double PerceiveAffordance(TVector<double> &v, RandomState &rs)
 					{
 						Agent.Reset(0, 0, 0);
 						Agent.SetPositionX(0);
-						ObjectRight.SetPositionX((gapsize/2)+(30/2.0) + pos);
-						ObjectLeft.SetPositionX((-(gapsize/2)-(30/2.0)) + pos);
-						ObjectRight.SetPositionY(275.0);
-						ObjectLeft.SetPositionY(275.0);
-						for (double t = 0; ObjectLeft.PositionY() > BodySize/2; t += StepSize) {
+						ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+						ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+						ObjectRight.SetPositionY(STARTHEIGHT);
+						ObjectLeft.SetPositionY(STARTHEIGHT);
+						for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
 							Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
 							ObjectLeft.Step(StepSize);
 							ObjectRight.Step(StepSize);
@@ -309,21 +312,40 @@ double PerceiveAffordance(TVector<double> &v, RandomState &rs)
 	return fit;
 }
 
-void testPerceiveAffordance(TVector<double> &v, RandomState &rs)
+void BehaviorPA(TVector<double> &v, RandomState &rs)
 {
-	ofstream avoid_posx,pass_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,pass_n1,pass_n2,pass_n3,pass_n4,pass_n5;
+	ofstream avoid_posx,approach_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7,approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
+	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7;
 	avoid_posx.open("A_avoid_aposx.dat");
+	avoid_s1.open("A_avoid_s1.dat");
+	avoid_s2.open("A_avoid_s2.dat");
+	avoid_s3.open("A_avoid_s3.dat");
+	avoid_s4.open("A_avoid_s4.dat");
+	avoid_s5.open("A_avoid_s5.dat");
+	avoid_s6.open("A_avoid_s6.dat");
+	avoid_s7.open("A_avoid_s7.dat");
 	avoid_n1.open("A_avoid_n1.dat");
 	avoid_n2.open("A_avoid_n2.dat");
 	avoid_n3.open("A_avoid_n3.dat");
 	avoid_n4.open("A_avoid_n4.dat");
 	avoid_n5.open("A_avoid_n5.dat");
-	pass_posx.open("A_pass_aposx.dat");
-	pass_n1.open("A_pass_n1.dat");
-	pass_n2.open("A_pass_n2.dat");
-	pass_n3.open("A_pass_n3.dat");
-	pass_n4.open("A_pass_n4.dat");
-	pass_n5.open("A_pass_n5.dat");
+	avoid_n6.open("A_avoid_n6.dat");
+	avoid_n7.open("A_avoid_n7.dat");
+	approach_posx.open("A_approach_aposx.dat");
+	approach_s1.open("A_approach_s1.dat");
+	approach_s2.open("A_approach_s2.dat");
+	approach_s3.open("A_approach_s3.dat");
+	approach_s4.open("A_approach_s4.dat");
+	approach_s5.open("A_approach_s5.dat");
+	approach_s6.open("A_approach_s6.dat");
+	approach_s7.open("A_approach_s7.dat");
+	approach_n1.open("A_approach_n1.dat");
+	approach_n2.open("A_approach_n2.dat");
+	approach_n3.open("A_approach_n3.dat");
+	approach_n4.open("A_approach_n4.dat");
+	approach_n5.open("A_approach_n5.dat");
+	approach_n6.open("A_approach_n6.dat");
+	approach_n7.open("A_approach_n7.dat");
 	//--
 	double fit = 0.0;
 	int trials = 0;
@@ -333,8 +355,8 @@ void testPerceiveAffordance(TVector<double> &v, RandomState &rs)
 	phenotype.SetBounds(1, VectSize);
 	GenPhenMapping(v, phenotype);
 	Agent.SetController(phenotype);
-	Line ObjectLeft(0.0,275.0,-3,0.0,30);
-	Line ObjectRight(0.0,275.0,-3,0.0,30);
+	Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+	Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 	{
 		if (pos != 0)
@@ -347,49 +369,85 @@ void testPerceiveAffordance(TVector<double> &v, RandomState &rs)
 					{
 						Agent.Reset(0, 0, 0);
 						Agent.SetPositionX(0);
-						ObjectRight.SetPositionX((gapsize/2)+(30/2.0) + pos);
-						ObjectLeft.SetPositionX((-(gapsize/2)-(30/2.0)) + pos);
-						ObjectRight.SetPositionY(275.0);
-						ObjectLeft.SetPositionY(275.0);
-						for (double t = 0; ObjectLeft.PositionY() > BodySize/2; t += StepSize) {
+						ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+						ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+						ObjectRight.SetPositionY(STARTHEIGHT);
+						ObjectLeft.SetPositionY(STARTHEIGHT);
+						for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
 							Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
 							ObjectLeft.Step(StepSize);
 							ObjectRight.Step(StepSize);
 							if (gapsize < BodySize){
 								avoid_posx << Agent.PositionX() - pos << " ";
+								avoid_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								avoid_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								avoid_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								avoid_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								avoid_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								avoid_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								avoid_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 								avoid_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
 								avoid_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 								avoid_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
 								avoid_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
 								avoid_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								avoid_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
+								avoid_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
 							}
 							else {
-								pass_posx << Agent.PositionX() - pos << " ";
-								pass_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								pass_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								pass_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								pass_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								pass_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								approach_posx << Agent.PositionX() - pos << " ";
+								approach_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								approach_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								approach_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								approach_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								approach_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								approach_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								approach_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
+								approach_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								approach_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								approach_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
+								approach_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
+								approach_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								approach_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
+								approach_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - pos);
 						if (gapsize < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
 							avoid_posx << endl;
+							avoid_s1 << endl;
+							avoid_s2 << endl;
+							avoid_s3 << endl;
+							avoid_s4 << endl;
+							avoid_s5 << endl;
+							avoid_s6 << endl;
+							avoid_s7 << endl;
 							avoid_n1 << endl;
 							avoid_n2 << endl;
 							avoid_n3 << endl;
 							avoid_n4 << endl;
 							avoid_n5 << endl;
+							avoid_n6 << endl;
+							avoid_n7 << endl;
 						}
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-							pass_posx << endl;
-							pass_n1 << endl;
-							pass_n2 << endl;
-							pass_n3 << endl;
-							pass_n4 << endl;
-							pass_n5 << endl;
+							approach_posx << endl;
+							approach_s1 << endl;
+							approach_s2 << endl;
+							approach_s3 << endl;
+							approach_s4 << endl;
+							approach_s5 << endl;
+							approach_s6 << endl;
+							approach_s7 << endl;
+							approach_n1 << endl;
+							approach_n2 << endl;
+							approach_n3 << endl;
+							approach_n4 << endl;
+							approach_n5 << endl;
+							approach_n6 << endl;
+							approach_n7 << endl;
 						}
 						trials += 1;
 						fit += final_distance;
@@ -401,18 +459,66 @@ void testPerceiveAffordance(TVector<double> &v, RandomState &rs)
 	fit = fit/trials;
 	cout << "Fitness: " << fit << endl;
 	avoid_posx.close();
-	pass_posx.close();
+	approach_posx.close();
 }
 
-void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
+void GeneralizationPA(TVector<double> &v, RandomState &rs)
 {
-	ofstream ftotal("lesions_afford.dat"),fpass("lesions_afford_pass.dat"),favoid("lesions_afford_avoid.dat");
+	ofstream finaloffset;
+	finaloffset.open("A_finaloffset.dat");
+	//--
+	double fit = 0.0;
+	int trials = 0;
+	double final_distance = 0.0;
+	VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+	TVector<double> phenotype;
+	phenotype.SetBounds(1, VectSize);
+	GenPhenMapping(v, phenotype);
+	Agent.SetController(phenotype);
+	Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+	Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+	for (double pos = 1.0; pos <= 5.0; pos += 0.01)
+	{
+		for (double gapsize = 20.0; gapsize <= 40.0; gapsize += 0.05)
+		{
+			Agent.Reset(0, 0, 0);
+			Agent.SetPositionX(0);
+			ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+			ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+			ObjectRight.SetPositionY(STARTHEIGHT);
+			ObjectLeft.SetPositionY(STARTHEIGHT);
+			for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
+				Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
+				ObjectLeft.Step(StepSize);
+				ObjectRight.Step(StepSize);
+			}
+			final_distance = fabs(Agent.PositionX() - pos);
+			finaloffset << final_distance << " ";
+			if (gapsize < BodySize){
+				final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+			}
+			else {
+				final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+			}
+			trials += 1;
+			fit += final_distance;
+		}
+		finaloffset << endl;
+	}
+	fit = fit/trials;
+	cout << "Performance: " << fit << endl;
+	finaloffset.close();
+}
+
+void ConnectionLesionsPA(TVector<double> &v, RandomState &rs)
+{
+	ofstream ftotal("lesions_afford.dat"),fapproach("lesions_afford_approach.dat"),favoid("lesions_afford_avoid.dat");
 	for (int from = NUMRAYS + 1; from <= NUMRAYS + NUMINTER; from++)
 	{
 		for (int to = NUMRAYS + 1; to <= NUMRAYS + NUMINTER; to++)
 		{
-			double fit = 0.0, fit_avoid = 0.0, fit_pass = 0.0;
-			int trials = 0, trials_pass = 0, trials_avoid = 0;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
 			double final_distance = 0.0;
 			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
 			TVector<double> phenotype;
@@ -420,8 +526,8 @@ void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
 			GenPhenMapping(v, phenotype);
 			Agent.SetController(phenotype);
 			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
-			Line ObjectLeft(0.0,275.0,-3,0.0,30);
-			Line ObjectRight(0.0,275.0,-3,0.0,30);
+			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 			{
 				if (pos != 0)
@@ -434,11 +540,11 @@ void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
 							{
 								Agent.Reset(0, 0, 0);
 								Agent.SetPositionX(0);
-								ObjectRight.SetPositionX((gapsize/2)+(30/2.0) + pos);
-								ObjectLeft.SetPositionX((-(gapsize/2)-(30/2.0)) + pos);
-								ObjectRight.SetPositionY(275.0);
-								ObjectLeft.SetPositionY(275.0);
-								for (double t = 0; ObjectLeft.PositionY() > BodySize/2; t += StepSize) {
+								ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+								ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+								ObjectRight.SetPositionY(STARTHEIGHT);
+								ObjectLeft.SetPositionY(STARTHEIGHT);
+								for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
 									Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
 									ObjectLeft.Step(StepSize);
 									ObjectRight.Step(StepSize);
@@ -451,8 +557,8 @@ void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
 								}
 								else {
 									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-									fit_pass += final_distance;
-									trials_pass += 1;
+									fit_approach += final_distance;
+									trials_approach += 1;
 								}
 								trials += 1;
 								fit += final_distance;
@@ -463,15 +569,15 @@ void PerceiveAffordanceConnectionLesions(TVector<double> &v, RandomState &rs)
 			}
 			fit = fit/trials;
 			ftotal << fit << " ";
-			fpass << fit_pass/trials_pass << " ";
+			fapproach << fit_approach/trials_approach << " ";
 			favoid << fit_avoid/trials_avoid << " ";
 		}
 		ftotal << endl;
-		fpass << endl;
+		fapproach << endl;
 		favoid << endl;
 	}
 	ftotal.close();
-	fpass.close();
+	fapproach.close();
 	favoid.close();
 }
 // - - - - - - - - - - - - - - - - - -
@@ -490,7 +596,7 @@ double CircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	phenotype.SetBounds(1, VectSize);
 	GenPhenMapping(v, phenotype);
 	Agent.SetController(phenotype);
-	Circle Object(0.0,275.0,-3,0.0,30);
+	Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 	{
 		if (pos != 0)
@@ -503,10 +609,10 @@ double CircleSizeCategorization(TVector<double> &v, RandomState &rs)
 					{
 						Agent.Reset(0, 0, 0);
 						Agent.SetPositionX(0);
-						Object.SetPositionY(275.0);
+						Object.SetPositionY(STARTHEIGHT);
 						Object.SetPositionX(pos);
 						Object.SetSize(size);
-						for (double t = 0; Object.PositionY() > BodySize/2; t += StepSize) {
+						for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
 							Agent.Step(rs, StepSize, Object);
 							Object.Step(StepSize);
 						}
@@ -528,21 +634,40 @@ double CircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	return fit;
 }
 
-void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
+void BehaviorCC(TVector<double> &v, RandomState &rs)
 {
-	ofstream avoid_posx,catch_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,catch_n1,catch_n2,catch_n3,catch_n4,catch_n5;
+	ofstream avoid_posx,approach_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7,approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
+	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7;
 	avoid_posx.open("B_avoid_aposx.dat");
+	avoid_s1.open("B_avoid_s1.dat");
+	avoid_s2.open("B_avoid_s2.dat");
+	avoid_s3.open("B_avoid_s3.dat");
+	avoid_s4.open("B_avoid_s4.dat");
+	avoid_s5.open("B_avoid_s5.dat");
+	avoid_s6.open("B_avoid_s6.dat");
+	avoid_s7.open("B_avoid_s7.dat");
 	avoid_n1.open("B_avoid_n1.dat");
 	avoid_n2.open("B_avoid_n2.dat");
 	avoid_n3.open("B_avoid_n3.dat");
 	avoid_n4.open("B_avoid_n4.dat");
 	avoid_n5.open("B_avoid_n5.dat");
-	catch_posx.open("B_catch_aposx.dat");
-	catch_n1.open("B_catch_n1.dat");
-	catch_n2.open("B_catch_n2.dat");
-	catch_n3.open("B_catch_n3.dat");
-	catch_n4.open("B_catch_n4.dat");
-	catch_n5.open("B_catch_n5.dat");
+	avoid_n6.open("B_avoid_n6.dat");
+	avoid_n7.open("B_avoid_n7.dat");
+	approach_posx.open("B_approach_aposx.dat");
+	approach_s1.open("B_approach_s1.dat");
+	approach_s2.open("B_approach_s2.dat");
+	approach_s3.open("B_approach_s3.dat");
+	approach_s4.open("B_approach_s4.dat");
+	approach_s5.open("B_approach_s5.dat");
+	approach_s6.open("B_approach_s6.dat");
+	approach_s7.open("B_approach_s7.dat");
+	approach_n1.open("B_approach_n1.dat");
+	approach_n2.open("B_approach_n2.dat");
+	approach_n3.open("B_approach_n3.dat");
+	approach_n4.open("B_approach_n4.dat");
+	approach_n5.open("B_approach_n5.dat");
+	approach_n6.open("B_approach_n6.dat");
+	approach_n7.open("B_approach_n7.dat");
 	//--
 	double fit = 0.0;
 	int trials = 0;
@@ -557,7 +682,6 @@ void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	sweights.open("sensorweights.dat");
 	iweights.open("interweights.dat");
 	mweights.open("motorweights.dat");
-	cout << VectSize << endl;
 	for (int i = 1; i <= 7; i += 1)
 	{
 		for (int j = 8; j <= 12; j += 1)
@@ -586,7 +710,7 @@ void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	iweights.close();
 	mweights.close();
 
-	Circle Object(0.0,275.0,-3,0.0,30);
+	Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 	{
 		if (pos != 0)
@@ -599,47 +723,97 @@ void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
 					{
 						Agent.Reset(0, 0, 0);
 						Agent.SetPositionX(0);
-						Object.SetPositionY(275.0);
+						Object.SetPositionY(STARTHEIGHT);
 						Object.SetPositionX(pos);
 						Object.SetSize(size);
-						for (double t = 0; Object.PositionY() > BodySize/2; t += StepSize) {
+						for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
 							Agent.Step(rs, StepSize, Object);
 							Object.Step(StepSize);
 							if (size < BodySize){
-								catch_posx << Agent.PositionX() - Object.PositionX() << " ";
-								catch_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								catch_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								catch_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								catch_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								catch_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								approach_posx << Agent.PositionX() - Object.PositionX() << " ";
+								approach_s1 << Agent.ExternalInput(1) << " ";
+								approach_s2 << Agent.ExternalInput(2) << " ";
+								approach_s3 << Agent.ExternalInput(3) << " ";
+								approach_s4 << Agent.ExternalInput(4) << " ";
+								approach_s5 << Agent.ExternalInput(5) << " ";
+								approach_s6 << Agent.ExternalInput(6) << " ";
+								approach_s7 << Agent.ExternalInput(7) << " ";
+								// approach_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								// approach_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								// approach_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								// approach_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								// approach_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								// approach_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								// approach_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
+								approach_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								approach_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								approach_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
+								approach_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
+								approach_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								approach_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
+								approach_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
 							}
 							else {
 								avoid_posx << Agent.PositionX() - Object.PositionX() << " ";
+								avoid_s1 << Agent.ExternalInput(1) << " ";
+								avoid_s2 << Agent.ExternalInput(2) << " ";
+								avoid_s3 << Agent.ExternalInput(3) << " ";
+								avoid_s4 << Agent.ExternalInput(4) << " ";
+								avoid_s5 << Agent.ExternalInput(5) << " ";
+								avoid_s6 << Agent.ExternalInput(6) << " ";
+								avoid_s7 << Agent.ExternalInput(7) << " ";
+								// avoid_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								// avoid_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								// avoid_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								// avoid_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								// avoid_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								// avoid_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								// avoid_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 								avoid_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
 								avoid_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 								avoid_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
 								avoid_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
 								avoid_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
+								avoid_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
+								avoid_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - Object.PositionX());
 						if (size < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-							catch_posx << endl;
-							catch_n1 << endl;
-							catch_n2 << endl;
-							catch_n3 << endl;
-							catch_n4 << endl;
-							catch_n5 << endl;
+							approach_posx << endl;
+							approach_s1 << endl;
+							approach_s2 << endl;
+							approach_s3 << endl;
+							approach_s4 << endl;
+							approach_s5 << endl;
+							approach_s6 << endl;
+							approach_s7 << endl;
+							approach_n1 << endl;
+							approach_n2 << endl;
+							approach_n3 << endl;
+							approach_n4 << endl;
+							approach_n5 << endl;
+							approach_n6 << endl;
+							approach_n7 << endl;
 						}
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
 							avoid_posx << endl;
+							avoid_s1 << endl;
+							avoid_s2 << endl;
+							avoid_s3 << endl;
+							avoid_s4 << endl;
+							avoid_s5 << endl;
+							avoid_s6 << endl;
+							avoid_s7 << endl;
 							avoid_n1 << endl;
 							avoid_n2 << endl;
 							avoid_n3 << endl;
 							avoid_n4 << endl;
-							avoid_n5 << endl;
+							avoid_n5 << endl;							
+							avoid_n6 << endl;
+							avoid_n7 << endl;
 						}
 						trials += 1;
 						fit += final_distance;
@@ -651,18 +825,63 @@ void testCircleSizeCategorization(TVector<double> &v, RandomState &rs)
 	fit = fit/trials;
 	cout << "Fitness: " << fit << endl;
 	avoid_posx.close();
-	catch_posx.close();
+	approach_posx.close();
 }
 
-void CircleSizeCategorizationConnectionLesions(TVector<double> &v, RandomState &rs)
+void GeneralizationCC(TVector<double> &v, RandomState &rs)
 {
-	ofstream ftotal("lesions_circle.dat"),fcatch("lesions_circle_catch.dat"),favoid("lesions_circle_avoid.dat");
+	ofstream finaloffset;
+	finaloffset.open("B_finaloffset.dat");
+	//--
+	double fit = 0.0;
+	int trials = 0;
+	double final_distance = 0.0;
+	VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+	TVector<double> phenotype;
+	phenotype.SetBounds(1, VectSize);
+	GenPhenMapping(v, phenotype);
+	Agent.SetController(phenotype);
+	Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+	for (double pos = 1.0; pos <= 5.0; pos += 0.01)
+	{
+		for (double size = 20.0; size <= 40.0; size += 0.05)
+		{
+			Agent.Reset(0, 0, 0);
+			Agent.SetPositionX(0);
+			Object.SetPositionY(STARTHEIGHT);
+			Object.SetPositionX(pos);
+			Object.SetSize(size);
+			for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
+				Agent.Step(rs, StepSize, Object);
+				Object.Step(StepSize);
+			}
+			final_distance = fabs(Agent.PositionX() - Object.PositionX());
+			finaloffset << final_distance << " ";
+			if (size < BodySize){
+				final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+			}
+			else {
+				final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+			}
+			trials += 1;
+			fit += final_distance;
+		}
+		finaloffset << endl;
+	}
+	fit = fit/trials;
+	cout << "Performance: " << fit << endl;
+	finaloffset.close();
+}
+
+void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
+{
+	ofstream ftotal("lesions_circle.dat"),fapproach("lesions_circle_approach.dat"),favoid("lesions_circle_avoid.dat");
 	for (int from = NUMRAYS + 1; from <= NUMRAYS + NUMINTER; from++)
 	{
 		for (int to = NUMRAYS + 1; to <= NUMRAYS + NUMINTER; to++)
 		{
-			double fit = 0.0, fit_avoid = 0.0, fit_catch = 0.0;
-			int trials = 0, trials_catch = 0, trials_avoid = 0;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
 			double final_distance = 0.0;
 			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
 			TVector<double> phenotype;
@@ -670,7 +889,7 @@ void CircleSizeCategorizationConnectionLesions(TVector<double> &v, RandomState &
 			GenPhenMapping(v, phenotype);
 			Agent.SetController(phenotype);
 			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
-			Circle Object(0.0,275.0,-3,0.0,30);
+			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
 			{
 				if (pos != 0)
@@ -683,18 +902,18 @@ void CircleSizeCategorizationConnectionLesions(TVector<double> &v, RandomState &
 							{
 								Agent.Reset(0, 0, 0);
 								Agent.SetPositionX(0);
-								Object.SetPositionY(275.0);
+								Object.SetPositionY(STARTHEIGHT);
 								Object.SetPositionX(pos);
 								Object.SetSize(size);
-								for (double t = 0; Object.PositionY() > BodySize/2; t += StepSize) {
+								for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
 									Agent.Step(rs, StepSize, Object);
 									Object.Step(StepSize);
 								}
 								final_distance = fabs(Agent.PositionX() - Object.PositionX());
 								if (size < BodySize){
 									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-									fit_catch += final_distance;
-									trials_catch += 1;
+									fit_approach += final_distance;
+									trials_approach += 1;
 								}
 								else {
 									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
@@ -710,15 +929,15 @@ void CircleSizeCategorizationConnectionLesions(TVector<double> &v, RandomState &
 			}
 			fit = fit/trials;
 			ftotal << fit << " ";
-			fcatch << fit_catch/trials_catch << " ";
+			fapproach << fit_approach/trials_approach << " ";
 			favoid << fit_avoid/trials_avoid << " ";
 		}
 		ftotal << endl;
-		fcatch << endl;
+		fapproach << endl;
 		favoid << endl;
 	}
 	ftotal.close();
-	fcatch.close();
+	fapproach.close();
 	favoid.close();
 }
 
@@ -799,9 +1018,9 @@ int main (int argc, const char* argv[]) {
 
 	// TASK 2: Object-size Categorization
 	s.SetSearchTerminationFunction(NULL);
-	s.SetEvaluationFunction(CircleSizeCategorization);//B
+	// s.SetEvaluationFunction(CircleSizeCategorization);//B
 	//s.SetEvaluationFunction(PerceiveAffordance); //A
-	//s.SetEvaluationFunction(MultipleTasks);//C
+	s.SetEvaluationFunction(MultipleTasks);//C
 	s.ExecuteSearch();
 
 	#ifdef PRINTTOFILE
@@ -822,10 +1041,12 @@ int main (int argc, const char* argv[])
 	TVector<double> bestVector(1, VectSize);
 	BestIndividualFile.open("best.gen.dat");
 	BestIndividualFile >> bestVector;
-	testCircleSizeCategorization(bestVector, rs);
-	testPerceiveAffordance(bestVector, rs);
-	// CircleSizeCategorizationConnectionLesions(bestVector, rs);
-	// PerceiveAffordanceConnectionLesions(bestVector, rs);
+	BehaviorCC(bestVector, rs);
+	BehaviorPA(bestVector, rs);
+	GeneralizationCC(bestVector, rs);
+	GeneralizationPA(bestVector, rs);
+	// ConnectionLesionsCC(bestVector, rs);
+	// ConnectionLesionsPA(bestVector, rs);
 	return 0;
 }
 #endif
