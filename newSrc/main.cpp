@@ -144,7 +144,6 @@ void GenPhenMapping(TVector<double> &gen, TVector<double> &phen)
 		phen(k) = MapSearchParameter( gen(k), GAINMIN, GAINMAX);
 		k++;
 	}
-	//cout << "[" << k << ":" << VectSize << "]" << endl;
 }
 #endif
 
@@ -188,21 +187,20 @@ void GenPhenMapping(TVector<double> &gen, TVector<double> &phen)
 		k++;
 	}
 	// Biases: Interneurons + One for sensor and one for motor
-	for (int i = 1; i <= H_NUMINTER+2; i++){
+	for (int i = 1; i <= H_NUMINTER+1; i++){
 		phen(k) = MapSearchParameter( gen(k), -BIASMAX, BIASMAX);
 		k++;
 	}
 	// TimeConstants: Interneurons + One for sensor and one for motor
-	for (int i = 1; i <= H_NUMINTER+2; i++){
+	for (int i = 1; i <= H_NUMINTER+1; i++){
 		phen(k) = MapSearchParameter( gen(k), TAUMIN, TAUMAX);
 		k++;
 	}
 	// Gains: Interneurons + One for sensor and one for motor
-	for (int i = 1; i <= H_NUMINTER+2; i++){
+	for (int i = 1; i <= H_NUMINTER+1; i++){
 		phen(k) = MapSearchParameter( gen(k), GAINMIN, GAINMAX);
 		k++;
 	}
-	//cout << "[" << k << ":" << VectSize << "]" << endl;
 }
 #endif
 
@@ -1010,29 +1008,27 @@ int main (int argc, const char* argv[]) {
 	// s.SetReEvaluationFlag(1);
 
 	// redirect standard output to a file
-	#ifdef PRINTTOFILE
-	ofstream evolfile;
-	evolfile.open ("fitness.dat");
-	cout.rdbuf(evolfile.rdbuf());
-	#endif
-
+	// #ifdef PRINTTOFILE
+	// ofstream evolfile;
+	// evolfile.open("fitness.dat");
+	// cout.rdbuf(evolfile.rdbuf());
+	// #endif
 	// TASK 2: Object-size Categorization
 	s.SetSearchTerminationFunction(NULL);
-	// s.SetEvaluationFunction(CircleSizeCategorization);//B
+	s.SetEvaluationFunction(CircleSizeCategorization);//B
 	//s.SetEvaluationFunction(PerceiveAffordance); //A
-	s.SetEvaluationFunction(MultipleTasks);//C
+	//s.SetEvaluationFunction(MultipleTasks);//C
 	s.ExecuteSearch();
 
-	#ifdef PRINTTOFILE
-	evolfile.close();
-	#endif
+	// #ifdef PRINTTOFILE
+	// evolfile.close();
+	// #endif
 
 	return 0;
 }
 #else
 int main (int argc, const char* argv[])
 {
-	cout << VectSize << endl;
 	RandomState rs;
 	long seed = static_cast<long>(time(NULL));
 	rs.SetRandomSeed(seed);

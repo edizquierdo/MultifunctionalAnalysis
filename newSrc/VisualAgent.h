@@ -33,15 +33,15 @@ class VisualAgent {
 			Rays.SetBounds(1, NumRays);
 			ExternalInput.SetBounds(1,NumRays);
 			ExternalInput.FillContents(0.0);
-			SensorWeight.SetBounds(1,NumRays,1,NumInter);
-			SensorWeight.FillContents(0.0);
 			Reset(ix,iy);
 			NumInter = NumInterNeurons_;
 			NumMotor = NumMotors_;
+			SensorWeight.SetBounds(1,NumRays,1,NumInter);
+			SensorWeight.FillContents(0.0);
 			H_NumRays = (int) ceil((float)NumRays_/2);
 			H_NumInter = (int) ceil((float)NumInterNeurons_/2);
 			H_NumMotor = (int) ceil((float)NumMotors_/2);
-			NumNeurons = NumInterNeurons_ + NumMotors_;  //XXX
+			NumNeurons = NumInterNeurons_ + NumMotors_;
 			NervousSystem.SetCircuitSize(NumNeurons);
 		};
 

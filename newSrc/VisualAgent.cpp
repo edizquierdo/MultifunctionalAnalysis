@@ -167,8 +167,8 @@ void VisualAgent::SetController(TVector<double> &phen)
     }
   }
   for (int j = 1; j <= H_NumInter; j++){
-    NervousSystem.SetConnectionWeight(H_NumRays,j,phen(k));
-    NervousSystem.SetConnectionWeight(H_NumRays,NumInter-j+1,phen(k));
+    SensorWeight(H_NumRays,j) = phen(k);
+    SensorWeight(H_NumRays,NumInter-j+1) = phen(k);
     k++;
   }
   // Weights from Inter to Inter
