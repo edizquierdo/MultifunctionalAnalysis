@@ -1015,8 +1015,8 @@ int main (int argc, const char* argv[]) {
 	// #endif
 	// TASK 2: Object-size Categorization
 	s.SetSearchTerminationFunction(NULL);
-	s.SetEvaluationFunction(CircleSizeCategorization);//B
-	//s.SetEvaluationFunction(PerceiveAffordance); //A
+	//s.SetEvaluationFunction(CircleSizeCategorization);//B
+	s.SetEvaluationFunction(PerceiveAffordance); //A
 	//s.SetEvaluationFunction(MultipleTasks);//C
 	s.ExecuteSearch();
 
