@@ -305,15 +305,20 @@ void VisualAgent::SetController(TVector<double> &phen)
 
 // Step the agent
 void VisualAgent::Step(RandomState &rs, double StepSize, VisualObject &object) {
+  double netinput;
   // Update visual sensors and check inputs
   ResetRays();
   for (int i=1; i<=NumRays; i++) {
     object.RayIntersection(Rays[i]);
     ExternalInput[i] = InputGain*(MaxRayLength - Rays[i].length)/MaxRayLength;
-    ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
-    for (int j=1; j<=NumInter; j++) {
-      NervousSystem.SetNeuronExternalInput(j, SensorWeight[i][j]*ExternalInput[i]);
+    //ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
+  }
+  for (int j=1; j<=NumInter; j++) {
+    netinput = 0.0;
+    for (int i=1; i<=NumRays; i++) {
+      netinput += SensorWeight[i][j]*ExternalInput[i];
     }
+    NervousSystem.SetNeuronExternalInput(j, netinput);
   }
 
   // Step nervous system
@@ -322,7 +327,7 @@ void VisualAgent::Step(RandomState &rs, double StepSize, VisualObject &object) {
   // Update agent state
   vx = VelGain*(NervousSystem.outputs[NumNeurons-1] - NervousSystem.outputs[NumNeurons]);
   cx = cx + StepSize*vx;
-  cx += rs.GaussianRandom(0.0,MotorNoiseVar);
+  //cx += rs.GaussianRandom(0.0,MotorNoiseVar);
   if (cx < -EnvWidth/2) {
     cx = -EnvWidth/2;
   } else if (cx > EnvWidth/2) {
@@ -331,16 +336,21 @@ void VisualAgent::Step(RandomState &rs, double StepSize, VisualObject &object) {
 }
 
 void VisualAgent::Step2(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2) {
+  double netinput;  
   // Update visual sensors and check inputs
   ResetRays();
   for (int i=1; i<=NumRays; i++) {
     object1.RayIntersection(Rays[i]);
     object2.RayIntersection(Rays[i]);
     ExternalInput[i] = InputGain*(MaxRayLength - Rays[i].length)/MaxRayLength;
-    ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
-    for (int j=1; j<=NumInter; j++) {
-      NervousSystem.SetNeuronExternalInput(j, SensorWeight[i][j]*ExternalInput[i]);
+    //ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
+  }
+  for (int j=1; j<=NumInter; j++) {
+    netinput = 0.0;
+    for (int i=1; i<=NumRays; i++) {
+      netinput += SensorWeight[i][j]*ExternalInput[i];
     }
+    NervousSystem.SetNeuronExternalInput(j, netinput);
   }
 
   // Step nervous system
@@ -349,7 +359,7 @@ void VisualAgent::Step2(RandomState &rs, double StepSize, VisualObject &object1,
   // Update agent state
   vx = VelGain*(NervousSystem.outputs[NumNeurons-1] - NervousSystem.outputs[NumNeurons]);
   cx = cx + StepSize*vx;
-  cx += rs.GaussianRandom(0.0,MotorNoiseVar);
+  //cx += rs.GaussianRandom(0.0,MotorNoiseVar);
   if (cx < -EnvWidth/2) {
     cx = -EnvWidth/2;
   } else if (cx > EnvWidth/2) {

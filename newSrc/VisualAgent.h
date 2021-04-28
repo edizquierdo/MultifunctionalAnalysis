@@ -18,11 +18,11 @@ const double Pi = 3.1415926535897;
 const double BodySize = 30.0;  //**20.0; // diameter of agent
 const double EnvWidth = 400.0;
 const double MaxRayLength = 220.0;
-const double InputGain = 10.0;  // Maximum input into the sensory neurons (from 0 to 10)
+const double InputGain = 1.0;  // Maximum input into the sensory neurons (from 0 to 10)
 const double VisualAngle = Pi/6; //**Pi/6;
 const double VelGain = 8.0; //**5.0 // sum of forces "constant of proportionality"
-const double SensorNoiseVar = 0.0; //0.1; //0.0; //0.1;
-const double MotorNoiseVar = 0.0; //0.01; //0.0; //0.01;
+// const double SensorNoiseVar = 0.0; //0.1; //0.0; //0.1;
+// const double MotorNoiseVar = 0.0; //0.01; //0.0; //0.01;
 
 // The VisualAgent class declaration
 class VisualAgent {

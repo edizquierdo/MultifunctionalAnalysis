@@ -22,8 +22,8 @@ const double InputGain = 10.0;  // Maximum input into the sensory neurons (from 
 const double VisualAngle = Pi/6; //**Pi/6;
 const double VelGain = 8.0; //**5.0 // sum of forces "constant of proportionality"
 
-const double SensorNoiseVar = 0.0; //0.1; //0.0; //0.1;
-const double MotorNoiseVar = 0.0; //0.01; //0.0; //0.01;
+//const double SensorNoiseVar = 0.0; //0.1; //0.0; //0.1;
+//const double MotorNoiseVar = 0.0; //0.01; //0.0; //0.01;
 
 // The VisualAgent class declaration
 

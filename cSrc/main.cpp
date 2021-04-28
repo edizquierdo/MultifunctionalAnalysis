@@ -5,8 +5,8 @@
 #include "random.h"
 #include "VisualAgent.h"
 
-// #define EVOLVE
-// #define PRINTTOFILE
+#define EVOLVE
+#define PRINTTOFILE
 
 using namespace std;
 
@@ -16,10 +16,10 @@ const int 		GENS 		 					= 1000;
 
 // Global constants
 const int			CIRCUITSIZE				= 15;
-const int 		NUMRAYS 					= 7;
+const int 		NUMRAYS 					= 15;
 const int 		NUMINTER 					= 7; //3,5,7,9,11,13,15;
 const int 		NUMMOTOR   				= 2;
-const int 		H_NUMRAYS = 4;
+const int 		H_NUMRAYS = 8;
 const int 		H_NUMINTER = 4; //2,3,4,5,6,7,8;
 const int 		H_NUMMOTOR = 1;
 
@@ -48,7 +48,7 @@ const double OBJECTHEIGHT = 30;
 const double REPS = 1;
 
 // Circuit's genotype-phenotype mapping
-const double	WEIGHTMAX					= 5.0;
+const double	WEIGHTMAX					= 10.0;
 const double	BIASMAX						= 10.0;
 const double	TAUMIN						= 1.0;
 const double	TAUMAX						= 2.0;
@@ -811,7 +811,7 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 							avoid_n2 << endl;
 							avoid_n3 << endl;
 							avoid_n4 << endl;
-							avoid_n5 << endl;							
+							avoid_n5 << endl;
 							avoid_n6 << endl;
 							avoid_n7 << endl;
 						}

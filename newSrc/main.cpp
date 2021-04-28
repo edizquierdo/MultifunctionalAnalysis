@@ -5,8 +5,8 @@
 #include "random.h"
 #include "VisualAgent.h"
 
-#define EVOLVE
-#define PRINTTOFILE
+// #define EVOLVE
+// #define PRINTTOFILE
 
 using namespace std;
 
@@ -48,7 +48,7 @@ const double OBJECTHEIGHT = 30;
 const double REPS = 1;
 
 // Circuit's genotype-phenotype mapping
-const double WEIGHTMAX = 5.0;
+const double WEIGHTMAX = 10.0;
 const double BIASMAX = 10.0;
 const double TAUMIN = 1.0;
 const double TAUMAX = 2.0;
@@ -1008,21 +1008,21 @@ int main (int argc, const char* argv[]) {
 	// s.SetReEvaluationFlag(1);
 
 	// redirect standard output to a file
-	// #ifdef PRINTTOFILE
-	// ofstream evolfile;
-	// evolfile.open("fitness.dat");
-	// cout.rdbuf(evolfile.rdbuf());
-	// #endif
+	#ifdef PRINTTOFILE
+	ofstream evolfile;
+	evolfile.open("fitness.dat");
+	cout.rdbuf(evolfile.rdbuf());
+	#endif
 	// TASK 2: Object-size Categorization
 	s.SetSearchTerminationFunction(NULL);
 	//s.SetEvaluationFunction(CircleSizeCategorization);//B
-	s.SetEvaluationFunction(PerceiveAffordance); //A
-	//s.SetEvaluationFunction(MultipleTasks);//C
+	//s.SetEvaluationFunction(PerceiveAffordance); //A
+	s.SetEvaluationFunction(MultipleTasks);//C
 	s.ExecuteSearch();
 
-	// #ifdef PRINTTOFILE
-	// evolfile.close();
-	// #endif
+	#ifdef PRINTTOFILE
+	evolfile.close();
+	#endif
 
 	return 0;
 }
