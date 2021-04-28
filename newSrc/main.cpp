@@ -5,8 +5,8 @@
 #include "random.h"
 #include "VisualAgent.h"
 
-// #define EVOLVE
-// #define PRINTTOFILE
+#define EVOLVE
+#define PRINTTOFILE
 
 using namespace std;
 
@@ -48,8 +48,8 @@ const double OBJECTHEIGHT = 30;
 const double REPS = 1;
 
 // Circuit's genotype-phenotype mapping
-const double WEIGHTMAX = 10.0;
-const double BIASMAX = 10.0;
+const double WEIGHTMAX = 5.0;
+const double BIASMAX = 5.0;
 const double TAUMIN = 1.0;
 const double TAUMAX = 2.0;
 const double GAINMIN = 1.0;
@@ -313,15 +313,7 @@ double PerceiveAffordance(TVector<double> &v, RandomState &rs)
 void BehaviorPA(TVector<double> &v, RandomState &rs)
 {
 	ofstream avoid_posx,approach_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7,approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
-	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7;
 	avoid_posx.open("A_avoid_aposx.dat");
-	avoid_s1.open("A_avoid_s1.dat");
-	avoid_s2.open("A_avoid_s2.dat");
-	avoid_s3.open("A_avoid_s3.dat");
-	avoid_s4.open("A_avoid_s4.dat");
-	avoid_s5.open("A_avoid_s5.dat");
-	avoid_s6.open("A_avoid_s6.dat");
-	avoid_s7.open("A_avoid_s7.dat");
 	avoid_n1.open("A_avoid_n1.dat");
 	avoid_n2.open("A_avoid_n2.dat");
 	avoid_n3.open("A_avoid_n3.dat");
@@ -330,13 +322,6 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	avoid_n6.open("A_avoid_n6.dat");
 	avoid_n7.open("A_avoid_n7.dat");
 	approach_posx.open("A_approach_aposx.dat");
-	approach_s1.open("A_approach_s1.dat");
-	approach_s2.open("A_approach_s2.dat");
-	approach_s3.open("A_approach_s3.dat");
-	approach_s4.open("A_approach_s4.dat");
-	approach_s5.open("A_approach_s5.dat");
-	approach_s6.open("A_approach_s6.dat");
-	approach_s7.open("A_approach_s7.dat");
 	approach_n1.open("A_approach_n1.dat");
 	approach_n2.open("A_approach_n2.dat");
 	approach_n3.open("A_approach_n3.dat");
@@ -377,50 +362,29 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 							ObjectRight.Step(StepSize);
 							if (gapsize < BodySize){
 								avoid_posx << Agent.PositionX() - pos << " ";
-								avoid_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
-								avoid_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
-								avoid_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
-								avoid_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
-								avoid_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
-								avoid_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
-								avoid_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								avoid_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								avoid_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								avoid_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								avoid_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								avoid_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								avoid_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								avoid_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
+								avoid_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								avoid_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								avoid_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								avoid_n4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								avoid_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								avoid_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								avoid_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 							}
 							else {
 								approach_posx << Agent.PositionX() - pos << " ";
-								approach_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
-								approach_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
-								approach_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
-								approach_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
-								approach_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
-								approach_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
-								approach_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								approach_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								approach_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								approach_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								approach_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								approach_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								approach_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								approach_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
+								approach_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								approach_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								approach_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								approach_n4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								approach_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								approach_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								approach_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - pos);
 						if (gapsize < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
 							avoid_posx << endl;
-							avoid_s1 << endl;
-							avoid_s2 << endl;
-							avoid_s3 << endl;
-							avoid_s4 << endl;
-							avoid_s5 << endl;
-							avoid_s6 << endl;
-							avoid_s7 << endl;
 							avoid_n1 << endl;
 							avoid_n2 << endl;
 							avoid_n3 << endl;
@@ -432,13 +396,6 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
 							approach_posx << endl;
-							approach_s1 << endl;
-							approach_s2 << endl;
-							approach_s3 << endl;
-							approach_s4 << endl;
-							approach_s5 << endl;
-							approach_s6 << endl;
-							approach_s7 << endl;
 							approach_n1 << endl;
 							approach_n2 << endl;
 							approach_n3 << endl;
@@ -457,7 +414,21 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	fit = fit/trials;
 	cout << "Fitness: " << fit << endl;
 	avoid_posx.close();
+	avoid_n1.close();
+	avoid_n2.close();
+	avoid_n3.close();
+	avoid_n4.close();
+	avoid_n5.close();
+	avoid_n6.close();
+	avoid_n7.close();
 	approach_posx.close();
+	approach_n1.close();
+	approach_n2.close();
+	approach_n3.close();
+	approach_n4.close();
+	approach_n5.close();
+	approach_n6.close();
+	approach_n7.close();
 }
 
 void GeneralizationPA(TVector<double> &v, RandomState &rs)
@@ -635,15 +606,7 @@ double CircleSizeCategorization(TVector<double> &v, RandomState &rs)
 void BehaviorCC(TVector<double> &v, RandomState &rs)
 {
 	ofstream avoid_posx,approach_posx,avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7,approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
-	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7;
 	avoid_posx.open("B_avoid_aposx.dat");
-	avoid_s1.open("B_avoid_s1.dat");
-	avoid_s2.open("B_avoid_s2.dat");
-	avoid_s3.open("B_avoid_s3.dat");
-	avoid_s4.open("B_avoid_s4.dat");
-	avoid_s5.open("B_avoid_s5.dat");
-	avoid_s6.open("B_avoid_s6.dat");
-	avoid_s7.open("B_avoid_s7.dat");
 	avoid_n1.open("B_avoid_n1.dat");
 	avoid_n2.open("B_avoid_n2.dat");
 	avoid_n3.open("B_avoid_n3.dat");
@@ -652,13 +615,6 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	avoid_n6.open("B_avoid_n6.dat");
 	avoid_n7.open("B_avoid_n7.dat");
 	approach_posx.open("B_approach_aposx.dat");
-	approach_s1.open("B_approach_s1.dat");
-	approach_s2.open("B_approach_s2.dat");
-	approach_s3.open("B_approach_s3.dat");
-	approach_s4.open("B_approach_s4.dat");
-	approach_s5.open("B_approach_s5.dat");
-	approach_s6.open("B_approach_s6.dat");
-	approach_s7.open("B_approach_s7.dat");
 	approach_n1.open("B_approach_n1.dat");
 	approach_n2.open("B_approach_n2.dat");
 	approach_n3.open("B_approach_n3.dat");
@@ -676,37 +632,37 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	GenPhenMapping(v, phenotype);
 	Agent.SetController(phenotype);
 
-	ofstream sweights,iweights,mweights;
-	sweights.open("sensorweights.dat");
-	iweights.open("interweights.dat");
-	mweights.open("motorweights.dat");
-	for (int i = 1; i <= 7; i += 1)
-	{
-		for (int j = 8; j <= 12; j += 1)
-		{
-			sweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
-		}
-		sweights << endl;
-	}
-	for (int i = 8; i <= 12; i += 1)
-	{
-		for (int j = 8; j <= 12; j += 1)
-		{
-			iweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
-		}
-		iweights << endl;
-	}
-	for (int i = 8; i <= 12; i += 1)
-	{
-		for (int j = 13; j <= 14; j += 1)
-		{
-			mweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
-		}
-		mweights << endl;
-	}
-	sweights.close();
-	iweights.close();
-	mweights.close();
+	// ofstream sweights,iweights,mweights;
+	// sweights.open("sensorweights.dat");
+	// iweights.open("interweights.dat");
+	// mweights.open("motorweights.dat");
+	// for (int i = 1; i <= 7; i += 1)
+	// {
+	// 	for (int j = 8; j <= 12; j += 1)
+	// 	{
+	// 		sweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
+	// 	}
+	// 	sweights << endl;
+	// }
+	// for (int i = 8; i <= 12; i += 1)
+	// {
+	// 	for (int j = 8; j <= 12; j += 1)
+	// 	{
+	// 		iweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
+	// 	}
+	// 	iweights << endl;
+	// }
+	// for (int i = 8; i <= 12; i += 1)
+	// {
+	// 	for (int j = 13; j <= 14; j += 1)
+	// 	{
+	// 		mweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
+	// 	}
+	// 	mweights << endl;
+	// }
+	// sweights.close();
+	// iweights.close();
+	// mweights.close();
 
 	Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
@@ -729,64 +685,29 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 							Object.Step(StepSize);
 							if (size < BodySize){
 								approach_posx << Agent.PositionX() - Object.PositionX() << " ";
-								approach_s1 << Agent.ExternalInput(1) << " ";
-								approach_s2 << Agent.ExternalInput(2) << " ";
-								approach_s3 << Agent.ExternalInput(3) << " ";
-								approach_s4 << Agent.ExternalInput(4) << " ";
-								approach_s5 << Agent.ExternalInput(5) << " ";
-								approach_s6 << Agent.ExternalInput(6) << " ";
-								approach_s7 << Agent.ExternalInput(7) << " ";
-								// approach_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
-								// approach_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
-								// approach_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
-								// approach_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
-								// approach_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
-								// approach_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
-								// approach_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								approach_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								approach_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								approach_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								approach_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								approach_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								approach_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								approach_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
+								approach_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								approach_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								approach_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								approach_n4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								approach_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								approach_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								approach_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 							}
 							else {
 								avoid_posx << Agent.PositionX() - Object.PositionX() << " ";
-								avoid_s1 << Agent.ExternalInput(1) << " ";
-								avoid_s2 << Agent.ExternalInput(2) << " ";
-								avoid_s3 << Agent.ExternalInput(3) << " ";
-								avoid_s4 << Agent.ExternalInput(4) << " ";
-								avoid_s5 << Agent.ExternalInput(5) << " ";
-								avoid_s6 << Agent.ExternalInput(6) << " ";
-								avoid_s7 << Agent.ExternalInput(7) << " ";
-								// avoid_s1 << Agent.NervousSystem.NeuronOutput(1) << " ";
-								// avoid_s2 << Agent.NervousSystem.NeuronOutput(2) << " ";
-								// avoid_s3 << Agent.NervousSystem.NeuronOutput(3) << " ";
-								// avoid_s4 << Agent.NervousSystem.NeuronOutput(4) << " ";
-								// avoid_s5 << Agent.NervousSystem.NeuronOutput(5) << " ";
-								// avoid_s6 << Agent.NervousSystem.NeuronOutput(6) << " ";
-								// avoid_s7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								avoid_n1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								avoid_n2 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								avoid_n3 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								avoid_n4 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								avoid_n5 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								avoid_n6 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								avoid_n7 << Agent.NervousSystem.NeuronOutput(14) << " ";
+								avoid_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
+								avoid_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
+								avoid_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
+								avoid_n4 << Agent.NervousSystem.NeuronOutput(4) << " ";
+								avoid_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
+								avoid_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
+								avoid_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - Object.PositionX());
 						if (size < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
 							approach_posx << endl;
-							approach_s1 << endl;
-							approach_s2 << endl;
-							approach_s3 << endl;
-							approach_s4 << endl;
-							approach_s5 << endl;
-							approach_s6 << endl;
-							approach_s7 << endl;
 							approach_n1 << endl;
 							approach_n2 << endl;
 							approach_n3 << endl;
@@ -798,13 +719,6 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
 							avoid_posx << endl;
-							avoid_s1 << endl;
-							avoid_s2 << endl;
-							avoid_s3 << endl;
-							avoid_s4 << endl;
-							avoid_s5 << endl;
-							avoid_s6 << endl;
-							avoid_s7 << endl;
 							avoid_n1 << endl;
 							avoid_n2 << endl;
 							avoid_n3 << endl;
@@ -823,7 +737,21 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	fit = fit/trials;
 	cout << "Fitness: " << fit << endl;
 	avoid_posx.close();
+	avoid_n1.close();
+	avoid_n2.close();
+	avoid_n3.close();
+	avoid_n4.close();
+	avoid_n5.close();
+	avoid_n6.close();
+	avoid_n7.close();
 	approach_posx.close();
+	approach_n1.close();
+	approach_n2.close();
+	approach_n3.close();
+	approach_n4.close();
+	approach_n5.close();
+	approach_n6.close();
+	approach_n7.close();
 }
 
 void GeneralizationCC(TVector<double> &v, RandomState &rs)
