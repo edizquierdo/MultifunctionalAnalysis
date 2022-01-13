@@ -59,11 +59,11 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../AnalysisData/best_categ_pass_agent"
+    data_dir = "../AnalysisData/86"
     # data_dir = "../AnalysisData/best_offset"
-    num_neurons = 5
+    num_neurons = 25
 
-    subtasks = {"A": ["pass", "avoid", "*"], "B": ["catch", "avoid", "*"], "*": ["*"]}
+    subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
     for task_name in "AB*":
         for subtask_name in subtasks[task_name]:
             print(task_name + " - " + subtask_name)

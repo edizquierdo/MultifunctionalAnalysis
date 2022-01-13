@@ -712,11 +712,12 @@ void GeneralizationPA(TVector<double> &v, RandomState &rs)
 
 void ConnectionLesionsPA(TVector<double> &v, RandomState &rs)
 {
-	ofstream ftotal("lesions_afford.dat"),fapproach("lesions_afford_approach.dat"),favoid("lesions_afford_avoid.dat");
+	ofstream ftotal("lesionsA.dat"),fapproach("lesionsA_approach.dat"),favoid("lesionsA_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
 		{
+			cout << from << ", " << to << endl;
 			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 			int trials = 0, trials_approach = 0, trials_avoid = 0;
 			double final_distance = 0.0;
@@ -728,11 +729,83 @@ void ConnectionLesionsPA(TVector<double> &v, RandomState &rs)
 			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
 			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
-			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
 			{
 				if (pos != 0)
 				{
-					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += SIZESTEP)
+					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 1.0)
+					{
+						if (gapsize != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+								ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+								ObjectRight.SetPositionY(STARTHEIGHT);
+								ObjectLeft.SetPositionY(STARTHEIGHT);
+								for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
+									Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
+									ObjectLeft.Step(StepSize);
+									ObjectRight.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - pos); //XXX
+								if (gapsize < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fapproach << fit_approach/trials_approach << " ";
+			favoid << fit_avoid/trials_avoid << " ";
+		}
+		ftotal << endl;
+		fapproach << endl;
+		favoid << endl;
+	}
+	ftotal.close();
+	fapproach.close();
+	favoid.close();
+}
+
+void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
+{
+	ofstream ftotal("infolesionsA.dat"),fapproach("infolesionsA_approach.dat"),favoid("infolesionsA_avoid.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			cout << from << ", " << to << endl;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
+			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 1.0)
 					{
 						if (gapsize != BodySize)
 						{
@@ -1209,7 +1282,7 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	approach_s15.close();
 
 	approach_m1.close();
-	approach_m2.close();	
+	approach_m2.close();
 }
 
 void GeneralizationCC(TVector<double> &v, RandomState &rs)
@@ -1261,11 +1334,12 @@ void GeneralizationCC(TVector<double> &v, RandomState &rs)
 
 void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
 {
-	ofstream ftotal("lesions_circle.dat"),fapproach("lesions_circle_approach.dat"),favoid("lesions_circle_avoid.dat");
+	ofstream ftotal("lesionsB.dat"),fapproach("lesionsB_approach.dat"),favoid("lesionsB_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
 		{
+			cout << from << ", " << to << endl;
 			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 			int trials = 0, trials_approach = 0, trials_avoid = 0;
 			double final_distance = 0.0;
@@ -1276,11 +1350,11 @@ void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
 			Agent.SetController(phenotype);
 			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
 			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
-			for (double pos = MINPOS; pos <= MAXPOS; pos += POSSTEP)
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
 			{
 				if (pos != 0)
 				{
-					for (double size = MINSIZE; size <= MAXSIZE; size += SIZESTEP)
+					for (double size = MINSIZE; size <= MAXSIZE; size += 1.0)
 					{
 						if (size != BodySize)
 						{
@@ -1425,12 +1499,12 @@ int main (int argc, const char* argv[])
 	TVector<double> bestVector(1, VectSize);
 	BestIndividualFile.open("best.gen.dat");
 	BestIndividualFile >> bestVector;
-	BehaviorCC(bestVector, rs);
-	BehaviorPA(bestVector, rs);
+	// BehaviorCC(bestVector, rs);
+	// BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
-	// ConnectionLesionsCC(bestVector, rs);
-	// ConnectionLesionsPA(bestVector, rs);
+	ConnectionLesionsCC(bestVector, rs);
+	ConnectionLesionsPA(bestVector, rs);
 	return 0;
 }
 #endif
