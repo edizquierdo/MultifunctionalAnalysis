@@ -254,7 +254,6 @@ void GenPhenMapping(TVector<double> &gen, TVector<double> &phen)
 // ------------------------------------
 
 // - - - - - - - - - - - - - - - - - -
-// NSF RI 2019
 // Task 1: Perceiving Affordances using Lines as walls
 // 		Gaps between the lines larger than self should be approached through.
 //    Gaps between the lines smaller than self should be avoided.
@@ -853,8 +852,8 @@ void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
 	fapproach.close();
 	favoid.close();
 }
+
 // - - - - - - - - - - - - - - - - - -
-// NSF RI 2019
 // Task 2: Size categorization using Circles.
 // 		Circles smaller than self should be caught.
 //		Circles larger than self should be avoided.
@@ -1401,6 +1400,75 @@ void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
 	favoid.close();
 }
 
+void InformationalLesionsCC(TVector<double> &v, RandomState &rs)
+{
+	ofstream ftotal("lesionsB.dat"),fapproach("lesionsB_approach.dat"),favoid("lesionsB_avoid.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			cout << from << ", " << to << endl;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
+			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double size = MINSIZE; size <= MAXSIZE; size += 1.0)
+					{
+						if (size != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								Object.SetPositionY(STARTHEIGHT);
+								Object.SetPositionX(pos);
+								Object.SetSize(size);
+								for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
+									Agent.Step(rs, StepSize, Object);
+									Object.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - Object.PositionX());
+								if (size < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fapproach << fit_approach/trials_approach << " ";
+			favoid << fit_avoid/trials_avoid << " ";
+		}
+		ftotal << endl;
+		fapproach << endl;
+		favoid << endl;
+	}
+	ftotal.close();
+	fapproach.close();
+	favoid.close();
+}
+
 // - - - - - - - - - - - - - - - - - -
 // NSF RI 2019
 // Multiple tasks
@@ -1499,12 +1567,12 @@ int main (int argc, const char* argv[])
 	TVector<double> bestVector(1, VectSize);
 	BestIndividualFile.open("best.gen.dat");
 	BestIndividualFile >> bestVector;
-	// BehaviorCC(bestVector, rs);
-	// BehaviorPA(bestVector, rs);
+	BehaviorCC(bestVector, rs);
+	BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
-	ConnectionLesionsCC(bestVector, rs);
-	ConnectionLesionsPA(bestVector, rs);
+	// ConnectionLesionsCC(bestVector, rs);
+	// ConnectionLesionsPA(bestVector, rs);
 	return 0;
 }
 #endif
