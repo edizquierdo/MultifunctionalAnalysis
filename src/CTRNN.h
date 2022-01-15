@@ -99,6 +99,8 @@ class CTRNN {
         void RandomizeCircuitOutput(double lb, double ub);
         void RandomizeCircuitOutput(double lb, double ub, RandomState &rs);
         void EulerStep(double stepsize);
+        void EulerStepLesionedNode(double stepsize, int lj, double outputj);
+        void EulerStepLesionedEdge(double stepsize, int lj, int li, double outputj);
         void RK4Step(double stepsize);
 
         int size;

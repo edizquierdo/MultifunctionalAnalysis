@@ -60,7 +60,11 @@ class VisualAgent {
 		void Reset(double ix, double iy, int randomize = 0);
     void Reset(RandomState &rs, double ix, double iy, int randomize);
 		void Step(RandomState &rs, double StepSize, VisualObject &object);
+		void StepNodeLesion(RandomState &rs, double StepSize, VisualObject &object, int lj, double outputj);
+		void StepEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int lj, int li, double outputj);
 		void Step2(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2);
+		void Step2NodeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, double outputj);
+		void Step2EdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, int li, double outputj);
 
 		CTRNN NervousSystem;
 		TVector<double> ExternalInput;

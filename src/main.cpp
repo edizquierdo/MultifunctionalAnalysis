@@ -18,6 +18,7 @@ const int GENS = 1000;
 const int NUMRAYS = 15;
 const int NUMINTER = 7;
 const int NUMMOTOR = 2;
+const int TOTALN = NUMRAYS + NUMINTER + NUMMOTOR;
 const int CIRCUITSIZE = NUMMOTOR + NUMINTER;
 const int H_NUMRAYS = 8;
 const int H_NUMINTER = 4;
@@ -709,7 +710,7 @@ void GeneralizationPA(TVector<double> &v, RandomState &rs)
 	finalperf.close();
 }
 
-void ConnectionLesionsPA(TVector<double> &v, RandomState &rs)
+void EdgeLesionsPA(TVector<double> &v, RandomState &rs)
 {
 	ofstream ftotal("lesionsA.dat"),fapproach("lesionsA_approach.dat"),favoid("lesionsA_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
@@ -781,28 +782,10 @@ void ConnectionLesionsPA(TVector<double> &v, RandomState &rs)
 	favoid.close();
 }
 
-void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
+void InfoEdgeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
-	// Agent #86
-		// Avoid
-		// [0, 0, 0.00154843, 0.0070781, 0.0100101, 0.0130264, 0.012012, 0.010344, 0.010344, 0.0142853, 0.0181678, 0.0192221, 0.0203684, 0.0177392, 0.0174701, 0.568797, 0.00025756, 0.0, 0.0145144, 0.0, 0.00500972, 0.730488, 0.812802, 0.996167]
-		// Approach
-		// [0.264534, 0.237391, 0.198071, 0.141228, 0.0578998, 0.0208204, 0.0104074, 0, 0, 0.00597839, 0.0471574, 0.139333, 0.203485, 0.252316, 0.271294, 0.299399, 0.000221923, 0.0, 0.412329, 0.0, 0.000142262, 0.300664, 0.96593, 0.960503]
 
-	// Agent #1
-		// Avoid
-		// {0, 0.00118682, 0.0148723, 0.0216501, 0.0275279, 0.0312532, \
-0.0170355, 0.013214, 0.013214, 0.0263859, 0.0362554, 0.0379571, \
-0.0391386, 0.0307869, 0.0238438, 0.767896, 0.0000790897, 0.95871, \
-0.0282687, 0.450506, 0.770556, 0.00236995, 0.183164, 0.952061}
-		// Approach
-		// {0.263705, 0.251275, 0.209041, 0.146265, 0.0659558, 0.0021918, 0, 0, \
-0, 0.00114131, 0.0634789, 0.143338, 0.206238, 0.248876, 0.261993, \
-0.840081, 0.831339, 0.962861, 0.0101698, 0.960956, 0.831412, \
-0.839843, 0.102754, 0.0975601}
-
-
-	ofstream ftotal("infolesionsA.dat"),fapproach("infolesionsA_approach.dat"),favoid("infolesionsA_avoid.dat");
+	ofstream ftotal("infoedgelesionsA.dat"),fapproach("infoedgelesionsA_approach.dat"),favoid("infonedgelesionsA_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
@@ -816,7 +799,6 @@ void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
 			phenotype.SetBounds(1, VectSize);
 			GenPhenMapping(v, phenotype);
 			Agent.SetController(phenotype);
-			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
 			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
@@ -836,11 +818,11 @@ void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
 								ObjectRight.SetPositionY(STARTHEIGHT);
 								ObjectLeft.SetPositionY(STARTHEIGHT);
 								for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
-									Agent.Step2(rs, StepSize, ObjectLeft, ObjectRight);
+									Agent.Step2EdgeLesion(rs, StepSize, ObjectLeft, ObjectRight, from, to, outputj[from]);
 									ObjectLeft.Step(StepSize);
 									ObjectRight.Step(StepSize);
 								}
-								final_distance = fabs(Agent.PositionX() - pos); //XXX
+								final_distance = fabs(Agent.PositionX() - pos);
 								if (gapsize < BodySize){
 									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
 									fit_avoid += final_distance;
@@ -867,6 +849,75 @@ void InformationalLesionsPA(TVector<double> &v, RandomState &rs)
 		fapproach << endl;
 		favoid << endl;
 	}
+	ftotal.close();
+	fapproach.close();
+	favoid.close();
+}
+
+void InfoNodeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
+{
+
+	ofstream ftotal("infonodelesionsA.dat"),fapproach("infonodelesionsA_approach.dat"),favoid("infonodelesionsA_avoid.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+			cout << from << endl;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 1.0)
+					{
+						if (gapsize != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+								ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+								ObjectRight.SetPositionY(STARTHEIGHT);
+								ObjectLeft.SetPositionY(STARTHEIGHT);
+								for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
+									Agent.Step2NodeLesion(rs, StepSize, ObjectLeft, ObjectRight, from, outputj[from]);
+									ObjectLeft.Step(StepSize);
+									ObjectRight.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - pos);
+								if (gapsize < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fapproach << fit_approach/trials_approach << " ";
+			favoid << fit_avoid/trials_avoid << " ";
+		}
+	ftotal << endl;
+	fapproach << endl;
+	favoid << endl;
 	ftotal.close();
 	fapproach.close();
 	favoid.close();
@@ -1350,7 +1401,7 @@ void GeneralizationCC(TVector<double> &v, RandomState &rs)
 	finalperf.close();
 }
 
-void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
+void EdgeLesionsCC(TVector<double> &v, RandomState &rs)
 {
 	ofstream ftotal("lesionsB.dat"),fapproach("lesionsB_approach.dat"),favoid("lesionsB_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
@@ -1419,28 +1470,10 @@ void ConnectionLesionsCC(TVector<double> &v, RandomState &rs)
 	favoid.close();
 }
 
-void InformationalLesionsCC(TVector<double> &v, RandomState &rs)
+void InfoEdgeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
-	// Agent #86
-		// Avoid
-		// [0, 0, 0, 0.000204069, 0.00518465, 0.0853394, 0.184183, 0.203899, 0.203899, 0.201074, 0.142809, 0.131287, 0.0833421, 0.0393479,  0.0356131, 0.470621, 0.177048, 0.0, 0.168401, 0.000652541, 0.22796, 0.619106, 0.856786, 0.995418]
-		// Approach
-		// [0.0762709, 0.106077, 0.1471, 0.206113, 0.291846, 0.419006, 0.476903, 0.506886, 0.506886, 0.46181, 0.302954, 0.216172, 0.155701, 0.112921, 0.0741852, 0.369745, 0.356616, 0.050678, 0.0976389, 0.0513785, 0.360468, 0.361535, 0.983515, 0.978001]
 
-		// Agent #1
-			// Avoid
-			// {0.00141435, 0.00140524, 0.00139299, 0.00137716, 0.00271376, \
-0.00811756, 0.0425408, 0.0548712, 0.0548712, 0.0512982, 0.0410326, \
-0.0175808, 0.0177869, 0.0179391, 0.0180614, 0.666901, 0.0590327, \
-0.926982, 0.0193273, 0.48237, 0.695798, 0.0590242, 0.265408, 0.895574}
-			// Approach
-			// {0.076395, 0.108547, 0.151537, 0.211346, 0.298317, 0.423636, 0.5036, \
-0.504307, 0.504307, 0.42356, 0.298242, 0.211301, 0.151482, 0.108501, \
-0.0763392, 0.339722, 0.801823, 0.960575, 0.00860543, 0.959476, \
-0.801831, 0.339681, 0.546811, 0.541451}
-
-
-	ofstream ftotal("lesionsB.dat"),fapproach("lesionsB_approach.dat"),favoid("lesionsB_avoid.dat");
+	ofstream ftotal("infoedgelesionsB.dat"),fapproach("infoedgelesionsB_approach.dat"),favoid("infoedgelesionsB_avoid.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
@@ -1454,7 +1487,6 @@ void InformationalLesionsCC(TVector<double> &v, RandomState &rs)
 			phenotype.SetBounds(1, VectSize);
 			GenPhenMapping(v, phenotype);
 			Agent.SetController(phenotype);
-			Agent.NervousSystem.SetConnectionWeight(from,to,0.0); 		// Delete connection
 			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
 			{
@@ -1472,7 +1504,7 @@ void InformationalLesionsCC(TVector<double> &v, RandomState &rs)
 								Object.SetPositionX(pos);
 								Object.SetSize(size);
 								for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
-									Agent.Step(rs, StepSize, Object);
+									Agent.StepEdgeLesion(rs, StepSize, Object, from, to, outputj[from]);
 									Object.Step(StepSize);
 								}
 								final_distance = fabs(Agent.PositionX() - Object.PositionX());
@@ -1502,6 +1534,72 @@ void InformationalLesionsCC(TVector<double> &v, RandomState &rs)
 		fapproach << endl;
 		favoid << endl;
 	}
+	ftotal.close();
+	fapproach.close();
+	favoid.close();
+}
+
+void InfoNodeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
+{
+
+	ofstream ftotal("infonodelesionsB.dat"),fapproach("infonodelesionsB_approach.dat"),favoid("infonodelesionsB_avoid.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+			cout << from << endl;
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double size = MINSIZE; size <= MAXSIZE; size += 1.0)
+					{
+						if (size != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								Object.SetPositionY(STARTHEIGHT);
+								Object.SetPositionX(pos);
+								Object.SetSize(size);
+								for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
+									Agent.StepNodeLesion(rs, StepSize, Object, from, outputj[from]);
+									Object.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - Object.PositionX());
+								if (size < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			ftotal << fit << " ";
+			fapproach << fit_approach/trials_approach << " ";
+			favoid << fit_avoid/trials_avoid << " ";
+		}
+	ftotal << endl;
+	fapproach << endl;
+	favoid << endl;
 	ftotal.close();
 	fapproach.close();
 	favoid.close();
@@ -1605,12 +1703,20 @@ int main (int argc, const char* argv[])
 	TVector<double> bestVector(1, VectSize);
 	BestIndividualFile.open("best.gen.dat");
 	BestIndividualFile >> bestVector;
-	BehaviorCC(bestVector, rs);
-	BehaviorPA(bestVector, rs);
+	ifstream avgOutputsFile;
+	TVector<double> avgOutputs(1, TOTALN);
+	avgOutputsFile.open("avgoutputs.dat");
+	avgOutputsFile >> avgOutputs;
+	// BehaviorCC(bestVector, rs);
+	// BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
-	// ConnectionLesionsCC(bestVector, rs);
-	// ConnectionLesionsPA(bestVector, rs);
+	// EdgeLesionsCC(bestVector, rs);
+	// EdgeLesionsPA(bestVector, rs);
+	InfoEdgeLesionsCC(bestVector, avgOutputs, rs);
+	InfoNodeLesionsCC(bestVector, avgOutputs, rs);
+	InfoEdgeLesionsPA(bestVector, avgOutputs, rs);
+	InfoNodeLesionsPA(bestVector, avgOutputs, rs);
 	return 0;
 }
 #endif

@@ -1,7 +1,7 @@
 // ************************************************************
 // A class for continuous-time recurrent neural networks
 //
-// RDB 
+// RDB
 //  8/94 Created
 //  12/98 Optimized integration
 //  1/08 Added table-based fast sigmoid w/ linear interpolation
@@ -42,12 +42,12 @@ double fastsigmoid(double x)
   double frac = modf(x*(SigTabSize-1)/SigTabRange, &id);
   int i = (int)id;
   double y1 = SigTab[i], y2 = SigTab[i+1];
- 
+
   return y1 + (y2 - y1) * frac;
 }
 #endif
 
-// **************************** 
+// ****************************
 // Constructors and Destructors
 // ****************************
 
@@ -143,8 +143,52 @@ void CTRNN::EulerStep(double stepsize)
   // Update the state of all neurons.
   for (int i = 1; i <= size; i++) {
     double input = externalinputs[i];
-    for (int j = 1; j <= size; j++) 
+    for (int j = 1; j <= size; j++)
       input += weights[j][i] * outputs[j];
+    states[i] += stepsize * Rtaus[i] * (input - states[i]);
+  }
+  // Update the outputs of all neurons.
+  for (int i = 1; i <= size; i++)
+    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
+}
+
+// INFORMATIONAL LESION TO NODE
+
+void CTRNN::EulerStepLesionedNode(double stepsize, int lj, double outputj)
+{
+  // Update the state of all neurons.
+  for (int i = 1; i <= size; i++) {
+    double input = externalinputs[i];
+    for (int j = 1; j <= size; j++){
+      if (j == lj) {
+        input += weights[j][i] * outputj;
+      }
+      else{
+        input += weights[j][i] * outputs[j];
+      }
+    }
+    states[i] += stepsize * Rtaus[i] * (input - states[i]);
+  }
+  // Update the outputs of all neurons.
+  for (int i = 1; i <= size; i++)
+    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
+}
+
+// INFORMATIONAL LESION TO EDGE
+
+void CTRNN::EulerStepLesionedEdge(double stepsize, int lj, int li, double outputj)
+{
+  // Update the state of all neurons.
+  for (int i = 1; i <= size; i++) {
+    double input = externalinputs[i];
+    for (int j = 1; j <= size; j++){
+      if ((i==li) && (j==lj)){
+        input += weights[j][i] * outputj;
+      }
+      else{
+        input += weights[j][i] * outputs[j];
+      }
+    }
     states[i] += stepsize * Rtaus[i] * (input - states[i]);
   }
   // Update the outputs of all neurons.
@@ -159,17 +203,17 @@ void CTRNN::RK4Step(double stepsize)
 {
 	int i,j;
 	double input;
-	
+
 	// The first step.
 	for (i = 1; i <= size; i++) {
 		input = externalinputs[i];
 		for (j = 1; j <= size; j++)
 			input += weights[j][i] * outputs[j];
-		k1[i] = stepsize * Rtaus[i] * (input - states[i]); 
+		k1[i] = stepsize * Rtaus[i] * (input - states[i]);
 		TempStates[i] = states[i] + 0.5*k1[i];
 		TempOutputs[i] = sigmoid(gains[i]*(TempStates[i]+biases[i]));
 	}
-		
+
 	// The second step.
 	for (i = 1; i <= size; i++) {
 		input = externalinputs[i];
@@ -180,7 +224,7 @@ void CTRNN::RK4Step(double stepsize)
 	}
 	for (i = 1; i <= size; i++)
 		TempOutputs[i] = sigmoid(gains[i]*(TempStates[i]+biases[i]));
-		
+
 	// The third step.
 	for (i = 1; i <= size; i++) {
 		input = externalinputs[i];
@@ -191,7 +235,7 @@ void CTRNN::RK4Step(double stepsize)
 	}
 	for (i = 1; i <= size; i++)
 		TempOutputs[i] = sigmoid(gains[i]*(TempStates[i]+biases[i]));
-		
+
 	// The fourth step.
 	for (i = 1; i <= size; i++) {
 		input = externalinputs[i];
@@ -209,7 +253,7 @@ void CTRNN::RK4Step(double stepsize)
 void CTRNN::SetCenterCrossing(void)
 {
     double InputWeights, ThetaStar;
-    
+
     for (int i = 1; i <= CircuitSize(); i++) {
         // Sum the input weights to this neuron
         InputWeights = 0;
@@ -277,7 +321,6 @@ istream& operator>>(istream& is, CTRNN& c)
 	for (int i = 1; i <= size; i++)
 		for (int j = 1; j <= size; j++)
 			is >> c.weights[i][j];
-	// Return the istream		
+	// Return the istream
 	return is;
-}		
-		
+}
