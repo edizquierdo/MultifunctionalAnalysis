@@ -1,6 +1,6 @@
 import os
 import glob
-
+from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 def corr(x, y):
     num = np.sum(x * y)
     den = np.sqrt(np.sum(x ** 2) * np.sum(y ** 2))
+    if den == 0.0:
+        return 0
     return num / den
 
 
@@ -15,18 +17,20 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
     all_neuron_dat = []
     # one neuron at a time
     mis = []
-    for ni in range(num_neurons):
-        relevant_files = "{}_{}_n{}.dat".format(task_name, subtask_name, ni + 1)
-        print(relevant_files)
+    for tag, count in num_neurons.items():
+        for ni in range(count):
+            relevant_files = "{}_{}_{}{}.dat".format(task_name, subtask_name, tag, ni + 1)
+            print(relevant_files)
 
-        # read and plot data for this neuron -- each file is one subtask
-        neuron_dat = []
-        for filename in glob.glob(os.path.join(data_dir, relevant_files)):
-            print(filename)
-            _dat = np.loadtxt(filename)
-            neuron_dat.append(_dat)
-        all_neuron_dat.append(np.vstack(neuron_dat))
+            # read and plot data for this neuron -- each file is one subtask
+            neuron_dat = []
+            for filename in glob.glob(os.path.join(data_dir, relevant_files)):
+                print(filename)
+                _dat = np.loadtxt(filename)
+                neuron_dat.append(_dat)
+            all_neuron_dat.append(np.vstack(neuron_dat))
 
+    num_neurons = sum([v for _, v in num_neurons.items()])
     all_neuron_dat = np.array(all_neuron_dat)
     all_neuron_dat = np.reshape(all_neuron_dat, [num_neurons, -1])
     print(np.shape(all_neuron_dat))
@@ -59,9 +63,21 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../AnalysisData/86"
-    # data_dir = "../AnalysisData/best_offset"
-    num_neurons = 25
+    data_dir = "../TimeSeries/86"
+    num_neurons = OrderedDict()
+    num_neurons["s"] = 15
+    num_neurons["n"] = 7
+    num_neurons["m"] = 2
+
+    results_dir = os.path.join(data_dir, "network_analysis_results")
+    if "s" in num_neurons and "m" in num_neurons:
+        results_dir = os.path.join(results_dir, "all_neurons")
+    elif "s" not in num_neurons and "m" not in num_neurons:
+        results_dir = os.path.join(results_dir, "only_interneurons")
+    else:
+        results_dir = os.path.join(results_dir, "_".join([k for k in num_neurons.keys()]))
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
     subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
     for task_name in "AB*":
@@ -74,7 +90,7 @@ if __name__ == "__main__":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "fc_corr_{}_{}".format(task_name, subtask_name))
+            fname = os.path.join(results_dir, "fc_corr_{}_{}".format(task_name, subtask_name))
             np.savetxt(fname + ".dat", fc)
             plt.savefig(fname + ".pdf")
             plt.close()

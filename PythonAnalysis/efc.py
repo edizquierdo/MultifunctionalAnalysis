@@ -1,6 +1,6 @@
 import os
 import glob
-
+from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -91,7 +91,7 @@ def efc(data, num_clusters, show):
     if show:
         sorted_inds = np.argsort(ci)
         tmp_efc = [e[sorted_inds] for e in efc_mat[sorted_inds]]
-        plt.figure()
+        plt.figure(figsize=[8, 8])
         imshow(
             tmp_efc,
             "Node pairs",
@@ -103,7 +103,7 @@ def efc(data, num_clusters, show):
             cmap="coolwarm",
         )
         ticks = ["{}-{}".format(n[0], n[1]) for n in node_pairs[sorted_inds]]
-        plt.xticks(np.arange(len(efc_mat)), ticks)
+        plt.xticks(np.arange(len(efc_mat)), ticks, rotation="vertical")
         plt.yticks(np.arange(len(efc_mat)), ticks)
         return efc_mat[np.triu_indices(len(efc_mat), k=1)]
 
@@ -117,7 +117,7 @@ def efc(data, num_clusters, show):
         ind += 1
 
     if show:
-        plt.figure()
+        plt.figure(figsize=[8, 8])
         imshow(node_ci, "Node pairs", "Node pairs", "Edge communities", "equal")
 
     # find nodes that have similar community profiles
@@ -128,7 +128,7 @@ def efc(data, num_clusters, show):
             dists[nj, ni] = dists[ni, nj]
 
     if show:
-        plt.figure()
+        plt.figure(figsize=[8, 8])
         imshow(dists, "Node pairs", "Node pairs", "Edge community similarities", "equal")
 
     ## other stuff
@@ -141,17 +141,18 @@ def fc_across_trials(data_dir, task_name, subtask_name, num_neurons, num_cluster
     all_neuron_dat = []
     # one neuron at a time
     mis = []
-    for ni in range(num_neurons):
-        relevant_files = "{}_{}_n{}.dat".format(task_name, subtask_name, ni + 1)
-        print(relevant_files)
+    for tag, count in num_neurons.items():
+        for ni in range(count):
+            relevant_files = "{}_{}_{}{}.dat".format(task_name, subtask_name, tag, ni + 1)
+            print(relevant_files)
 
-        # read data for this neuron
-        neuron_dat = []
-        for filename in glob.glob(os.path.join(data_dir, relevant_files)):
-            print(filename)
-            _dat = np.loadtxt(filename)
-            neuron_dat.append(_dat)
-        all_neuron_dat.append(np.vstack(neuron_dat))
+            # read and plot data for this neuron -- each file is one subtask
+            neuron_dat = []
+            for filename in glob.glob(os.path.join(data_dir, relevant_files)):
+                print(filename)
+                _dat = np.loadtxt(filename)
+                neuron_dat.append(_dat)
+            all_neuron_dat.append(np.vstack(neuron_dat))
 
     all_neuron_dat = np.array(all_neuron_dat)
     # print(np.shape(all_neuron_dat))
@@ -176,11 +177,23 @@ if __name__ == "__main__":
     # test_efc()
 
     # analysis args
-    data_dir = "../AnalysisData/best_categ_pass_agent"
-    # data_dir = "../AnalysisData/best_offset"
-    num_neurons = 5
+    data_dir = "../TimeSeries/1"
+    num_neurons = OrderedDict()
+    num_neurons["s"] = 15
+    num_neurons["n"] = 7
+    num_neurons["m"] = 2
 
-    subtasks = {"A": ["pass", "avoid", "*"], "B": ["catch", "avoid", "*"], "*": ["*"]}
+    results_dir = os.path.join(data_dir, "network_analysis_results")
+    if "s" in num_neurons and "m" in num_neurons:
+        results_dir = os.path.join(results_dir, "all_neurons")
+    elif "s" not in num_neurons and "m" not in num_neurons:
+        results_dir = os.path.join(results_dir, "only_interneurons")
+    else:
+        results_dir = os.path.join(results_dir, "_".join([k for k in num_neurons.keys()]))
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
     for task_name in "AB*":
         for subtask_name in subtasks[task_name]:
             print(task_name + " - " + subtask_name)
@@ -191,8 +204,9 @@ if __name__ == "__main__":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(data_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
+            fname = os.path.join(results_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
             np.savetxt(fname + ".dat", efc_mat)
+            plt.tight_layout()
             plt.savefig(fname + ".pdf")
             plt.close()
             print("")
