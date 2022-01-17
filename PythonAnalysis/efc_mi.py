@@ -82,6 +82,7 @@ def efc_mi_from_edge_ts(edge_ts):
 
     return mis
 
+
 def efc(data, num_clusters, show):
     """
     data: N x time
@@ -230,7 +231,7 @@ if __name__ == "__main__":
                 task_name = "both"
             if subtask_name == "*":
                 subtask_name = "both"
-            fname = os.path.join(results_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
+            fname = os.path.join(results_dir, "efc_mi_{}_{}".format(task_name, subtask_name))
             np.savetxt(fname + ".dat", efc_mat)
             plt.tight_layout()
             plt.savefig(fname + ".pdf")

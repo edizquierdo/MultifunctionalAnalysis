@@ -177,36 +177,36 @@ if __name__ == "__main__":
     # test_efc()
 
     # analysis args
-    data_dir = "../TimeSeries/1"
-    num_neurons = OrderedDict()
-    num_neurons["s"] = 15
-    num_neurons["n"] = 7
-    num_neurons["m"] = 2
+    for data_dir in ["../TimeSeries/1", "../TimeSeries/86"]:
+        num_neurons = OrderedDict()
+        # num_neurons["s"] = 15
+        num_neurons["n"] = 7
+        # num_neurons["m"] = 2
 
-    results_dir = os.path.join(data_dir, "network_analysis_results")
-    if "s" in num_neurons and "m" in num_neurons:
-        results_dir = os.path.join(results_dir, "all_neurons")
-    elif "s" not in num_neurons and "m" not in num_neurons:
-        results_dir = os.path.join(results_dir, "only_interneurons")
-    else:
-        results_dir = os.path.join(results_dir, "_".join([k for k in num_neurons.keys()]))
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+        results_dir = os.path.join(data_dir, "network_analysis_results")
+        if "s" in num_neurons and "m" in num_neurons:
+            results_dir = os.path.join(results_dir, "all_neurons")
+        elif "s" not in num_neurons and "m" not in num_neurons:
+            results_dir = os.path.join(results_dir, "only_interneurons")
+        else:
+            results_dir = os.path.join(results_dir, "_".join([k for k in num_neurons.keys()]))
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
 
-    subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
-    for task_name in "AB*":
-        for subtask_name in subtasks[task_name]:
-            print(task_name + " - " + subtask_name)
-            # plt.figure(figsize=[4, 3])
-            efc_mat = fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
+        subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
+        for task_name in "AB*":
+            for subtask_name in subtasks[task_name]:
+                print(task_name + " - " + subtask_name)
+                # plt.figure(figsize=[4, 3])
+                efc_mat = fc_across_trials(data_dir, task_name, subtask_name, num_neurons)
 
-            if task_name == "*":
-                task_name = "both"
-            if subtask_name == "*":
-                subtask_name = "both"
-            fname = os.path.join(results_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
-            np.savetxt(fname + ".dat", efc_mat)
-            plt.tight_layout()
-            plt.savefig(fname + ".pdf")
-            plt.close()
-            print("")
+                if task_name == "*":
+                    task_name = "both"
+                if subtask_name == "*":
+                    subtask_name = "both"
+                fname = os.path.join(results_dir, "efc_efc_{}_{}".format(task_name, subtask_name))
+                np.savetxt(fname + ".dat", efc_mat)
+                plt.tight_layout()
+                plt.savefig(fname + ".pdf")
+                plt.close()
+                print("")

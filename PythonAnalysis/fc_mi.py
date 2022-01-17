@@ -56,6 +56,8 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
         plt.tight_layout()
         # plt.show()
 
+    return mis
+
 
 if __name__ == "__main__":
     # analysis args
@@ -80,13 +82,14 @@ if __name__ == "__main__":
             for subtask_name in subtasks[task_name]:
                 print(task_name + " - " + subtask_name)
                 plt.figure(figsize=[4, 3])
-                fc_mi(data_dir, task_name, subtask_name, num_neurons)
+                mis = fc_mi(data_dir, task_name, subtask_name, num_neurons)
 
                 if task_name == "*":
                     task_name = "both"
                 if subtask_name == "*":
                     subtask_name = "both"
-                fname = os.path.join(results_dir, "fc_mi_{}_{}.pdf".format(task_name, subtask_name))
-                plt.savefig(fname)
+                fname = os.path.join(results_dir, "fc_mi_{}_{}".format(task_name, subtask_name))
+                np.savetxt(fname + ".dat", mis)
+                plt.savefig(fname + ".pdf")
                 plt.close()
                 print("")
