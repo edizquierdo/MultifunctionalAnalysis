@@ -1,6 +1,6 @@
 import os
 import glob
-
+from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 import infotheory
@@ -10,18 +10,20 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
     all_neuron_dat = []
     # one neuron at a time
     mis = []
-    for ni in range(num_neurons):
-        relevant_files = "{}_{}_n{}.dat".format(task_name, subtask_name, ni + 1)
-        print(relevant_files)
+    for tag, count in num_neurons.items():
+        for ni in range(count):
+            relevant_files = "{}_{}_{}{}.dat".format(task_name, subtask_name, tag, ni + 1)
+            print(relevant_files)
 
-        # read and plot data for this neuron -- each file is one subtask
-        neuron_dat = []
-        for filename in glob.glob(os.path.join(data_dir, relevant_files)):
-            print(filename)
-            _dat = np.loadtxt(filename)
-            neuron_dat.append(_dat)
-        all_neuron_dat.append(np.vstack(neuron_dat))
+            # read and plot data for this neuron -- each file is one subtask
+            neuron_dat = []
+            for filename in glob.glob(os.path.join(data_dir, relevant_files)):
+                print(filename)
+                _dat = np.loadtxt(filename)
+                neuron_dat.append(_dat)
+            all_neuron_dat.append(np.vstack(neuron_dat))
 
+    num_neurons = sum([v for _, v in num_neurons.items()])
     all_neuron_dat = np.array(all_neuron_dat)
     all_neuron_dat = np.reshape(all_neuron_dat, [num_neurons, -1])
 
@@ -57,21 +59,34 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
 
 if __name__ == "__main__":
     # analysis args
-    data_dir = "../AnalysisData/86"
-    num_neurons = 7
+    for data_dir in ["../TimeSeries/1", "../TimeSeries/86"]:
+        num_neurons = OrderedDict()
+        # num_neurons["s"] = 15
+        num_neurons["n"] = 7
+        # num_neurons["m"] = 2
 
-    subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
-    for task_name in "AB*":
-        for subtask_name in subtasks[task_name]:
-            print(task_name + " - " + subtask_name)
-            plt.figure(figsize=[4, 3])
-            fc_mi(data_dir, task_name, subtask_name, num_neurons)
+        results_dir = os.path.join(data_dir, "network_analysis_results")
+        if "s" in num_neurons and "m" in num_neurons:
+            results_dir = os.path.join(results_dir, "all_neurons")
+        elif "s" not in num_neurons and "m" not in num_neurons:
+            results_dir = os.path.join(results_dir, "only_interneurons")
+        else:
+            results_dir = os.path.join(results_dir, "_".join([k for k in num_neurons.keys()]))
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
 
-            if task_name == "*":
-                task_name = "both"
-            if subtask_name == "*":
-                subtask_name = "both"
-            fname = os.path.join(data_dir, "fc_mi_{}_{}.pdf".format(task_name, subtask_name))
-            plt.savefig(fname)
-            plt.close()
-            print("")
+        subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
+        for task_name in "AB*":
+            for subtask_name in subtasks[task_name]:
+                print(task_name + " - " + subtask_name)
+                plt.figure(figsize=[4, 3])
+                fc_mi(data_dir, task_name, subtask_name, num_neurons)
+
+                if task_name == "*":
+                    task_name = "both"
+                if subtask_name == "*":
+                    subtask_name = "both"
+                fname = os.path.join(results_dir, "fc_mi_{}_{}.pdf".format(task_name, subtask_name))
+                plt.savefig(fname)
+                plt.close()
+                print("")
