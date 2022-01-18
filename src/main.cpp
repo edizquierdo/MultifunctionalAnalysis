@@ -2031,9 +2031,9 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 {
 	// Interneuron Weights
 	ofstream fitotal("sysedge_iw_B.dat");
-	for (int from = 1; from <= NUMINTER; from++)
+	for (int from = 1; from <= 2; from++)
 	{
-		for (int to = 1; to <= NUMINTER; to++)
+		for (int to = 1; to <= 2; to++)
 		{
 			double maxfit = 0.0;
 			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
@@ -2091,6 +2091,7 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 					if (fit > maxfit){
 						maxfit = fit;
 					}
+					cout << from << " " << to << " " << outputFrom << " " << outputTo << " " << fit << " " << maxfit << endl;
 				}
 			}
 			fitotal << maxfit << " ";
@@ -2274,8 +2275,8 @@ int main (int argc, const char* argv[])
 	// GeneralizationPA(bestVector, rs);
 	// EdgeLesionsCC(bestVector, rs);
 	// EdgeLesionsPA(bestVector, rs);
-	SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
-	//SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
+	//SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
+	SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
 	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
 	//InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);

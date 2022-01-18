@@ -203,7 +203,7 @@ void CTRNN::EulerStepTwoWayLesionedEdge(double stepsize, int from, int to, doubl
     double input = externalinputs[i];
     for (int j = 1; j <= size; j++){
       if ((i==from) && (j==to)){
-        input += weights[i][j] * outputFrom;
+        input += weights[from][to] * outputFrom;
       }
       else{
         if ((i==to) && (j==from)){
