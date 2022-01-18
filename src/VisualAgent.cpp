@@ -443,6 +443,37 @@ void VisualAgent::StepInterEdgeLesion(RandomState &rs, double StepSize, VisualOb
   }
 }
 
+void VisualAgent::StepInterTwoWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int from, int to, double outputFrom, double outputTo) {
+  double netinput;
+  // Update visual sensors and check inputs
+  ResetRays();
+  for (int i=1; i<=NumRays; i++) {
+    object.RayIntersection(Rays[i]);
+    ExternalInput[i] = InputGain*(MaxRayLength - Rays[i].length)/MaxRayLength;
+    //ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
+  }
+  for (int j=1; j<=NumInter; j++) {
+    netinput = 0.0;
+    for (int i=1; i<=NumRays; i++) {
+        netinput += SensorWeight[i][j]*ExternalInput[i];
+    }
+    NervousSystem.SetNeuronExternalInput(j, netinput);
+  }
+
+  // Step nervous system
+  NervousSystem.EulerStepTwoWayLesionedEdge(StepSize,from,to,outputFrom,outputTo);
+
+  // Update agent state
+  vx = VelGain*(NervousSystem.outputs[NumNeurons-1] - NervousSystem.outputs[NumNeurons]);
+  cx = cx + StepSize*vx;
+  //cx += rs.GaussianRandom(0.0,MotorNoiseVar);
+  if (cx < -EnvWidth/2) {
+    cx = -EnvWidth/2;
+  } else if (cx > EnvWidth/2) {
+    cx = EnvWidth/2;
+  }
+}
+
 void VisualAgent::Step2(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2) {
   double netinput;
   // Update visual sensors and check inputs
@@ -553,7 +584,6 @@ void VisualAgent::Step2SensorEdgeLesion(RandomState &rs, double StepSize, Visual
   }
 }
 
-
 void VisualAgent::Step2InterEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, int li, double outputj) {
   double netinput;
   // Update visual sensors and check inputs
@@ -573,6 +603,37 @@ void VisualAgent::Step2InterEdgeLesion(RandomState &rs, double StepSize, VisualO
   }
   // Step nervous system
   NervousSystem.EulerStepLesionedEdge(StepSize,lj,li,outputj);
+
+  // Update agent state
+  vx = VelGain*(NervousSystem.outputs[NumNeurons-1] - NervousSystem.outputs[NumNeurons]);
+  cx = cx + StepSize*vx;
+  //cx += rs.GaussianRandom(0.0,MotorNoiseVar);
+  if (cx < -EnvWidth/2) {
+    cx = -EnvWidth/2;
+  } else if (cx > EnvWidth/2) {
+    cx = EnvWidth/2;
+  }
+}
+
+void VisualAgent::Step2InterTwoWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int from, int to, double outputFrom, double outputTo) {
+  double netinput;
+  // Update visual sensors and check inputs
+  ResetRays();
+  for (int i=1; i<=NumRays; i++) {
+    object1.RayIntersection(Rays[i]);
+    object2.RayIntersection(Rays[i]);
+    ExternalInput[i] = InputGain*(MaxRayLength - Rays[i].length)/MaxRayLength;
+    //ExternalInput[i] += rs.GaussianRandom(0.0,SensorNoiseVar);
+  }
+  for (int i=1; i<=NumInter; i++) {
+    netinput = 0.0;
+    for (int j=1; j<=NumRays; j++) {
+        netinput += SensorWeight[j][i]*ExternalInput[j];
+      }
+    NervousSystem.SetNeuronExternalInput(i, netinput);
+  }
+  // Step nervous system
+  NervousSystem.EulerStepTwoWayLesionedEdge(StepSize,from,to,outputFrom,outputTo);
 
   // Update agent state
   vx = VelGain*(NervousSystem.outputs[NumNeurons-1] - NervousSystem.outputs[NumNeurons]);

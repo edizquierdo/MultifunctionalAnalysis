@@ -990,6 +990,80 @@ void InfoEdgeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState
 	fmavoid.close();
 }
 
+void InfoTwoWayEdgeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
+{
+
+	// Interneuron Weights
+	ofstream fitotal("infoedge_iw_A.dat"),fiapproach("infoedge_iw_A_app.dat"),fiavoid("infoedge_iw_A_avo.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 1.0)
+					{
+						if (gapsize != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+								ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+								ObjectRight.SetPositionY(STARTHEIGHT);
+								ObjectLeft.SetPositionY(STARTHEIGHT);
+								for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
+									Agent.Step2InterTwoWayEdgeLesion(rs, StepSize, ObjectLeft, ObjectRight, from, to, outputj[from + NUMRAYS], outputj[to + NUMRAYS]);
+									ObjectLeft.Step(StepSize);
+									ObjectRight.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - pos);
+								if (gapsize < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			fitotal << fit << " ";
+			fiapproach << fit_approach/trials_approach << " ";
+			fiavoid << fit_avoid/trials_avoid << " ";
+			cout << "IW: " << from << ", " << to << ": " << fit << ", " << fit_approach/trials_approach << ", " << fit_avoid/trials_avoid << endl;
+		}
+		fitotal << endl;
+		fiapproach << endl;
+		fiavoid << endl;
+	}
+	fitotal.close();
+	fiapproach.close();
+	fiavoid.close();
+}
+
+
 void InfoNodeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
 
@@ -1806,6 +1880,76 @@ void InfoEdgeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState
 	fmavoid.close();
 }
 
+void InfoTwoWayEdgeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
+{
+
+	// Interneuron Weights
+	ofstream fitotal("infoedge_iw_B.dat"),fiapproach("infoedge_iw_B_app.dat"),fiavoid("infoedge_iw_B_avo.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+			int trials = 0, trials_approach = 0, trials_avoid = 0;
+			double final_distance = 0.0;
+			VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+			TVector<double> phenotype;
+			phenotype.SetBounds(1, VectSize);
+			GenPhenMapping(v, phenotype);
+			Agent.SetController(phenotype);
+			Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+			for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+			{
+				if (pos != 0)
+				{
+					for (double size = MINSIZE; size <= MAXSIZE; size += 1.0)
+					{
+						if (size != BodySize)
+						{
+							for (double reps = 0; reps <= REPS; reps += 1)
+							{
+								Agent.Reset(0, 0, 0);
+								Agent.SetPositionX(0);
+								Object.SetPositionY(STARTHEIGHT);
+								Object.SetPositionX(pos);
+								Object.SetSize(size);
+								for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
+									Agent.StepInterTwoWayEdgeLesion(rs, StepSize, Object, from, to, outputj[from + NUMRAYS], outputj[to + NUMRAYS]);
+									Object.Step(StepSize);
+								}
+								final_distance = fabs(Agent.PositionX() - Object.PositionX());
+								if (size < BodySize){
+									final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+									fit_approach += final_distance;
+									trials_approach += 1;
+								}
+								else {
+									final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+									fit_avoid += final_distance;
+									trials_avoid += 1;
+								}
+								trials += 1;
+								fit += final_distance;
+							}
+						}
+					}
+				}
+			}
+			fit = fit/trials;
+			fitotal << fit << " ";
+			fiapproach << fit_approach/trials_approach << " ";
+			fiavoid << fit_avoid/trials_avoid << " ";
+			cout << "IW: " << from << ", " << to << ": " << fit << ", " << fit_approach/trials_approach << ", " << fit_avoid/trials_avoid << endl;
+		}
+		fitotal << endl;
+		fiapproach << endl;
+		fiavoid << endl;
+	}
+	fitotal.close();
+	fiapproach.close();
+	fiavoid.close();
+}
+
 void InfoNodeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
 
@@ -1980,9 +2124,9 @@ int main (int argc, const char* argv[])
 	// GeneralizationPA(bestVector, rs);
 	// EdgeLesionsCC(bestVector, rs);
 	// EdgeLesionsPA(bestVector, rs);
-	InfoEdgeLesionsCC(bestVector, avgOutputs, rs);
+	InfoTwoWayEdgeLesionsPA(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
-	InfoEdgeLesionsPA(bestVector, avgOutputs, rs);
+	InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);
 	return 0;
 }
