@@ -1063,6 +1063,83 @@ void InfoTwoWayEdgeLesionsPA(TVector<double> &v, TVector<double> &outputj, Rando
 	fiavoid.close();
 }
 
+void SystematicInfoTwoWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
+{
+
+	// Interneuron Weights
+	ofstream fitotal("sysedge_iw_A.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			double maxfit = 0.0;
+			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.1)
+			{
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.1)
+				{
+					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+					int trials = 0, trials_approach = 0, trials_avoid = 0;
+					double final_distance = 0.0;
+					VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+					TVector<double> phenotype;
+					phenotype.SetBounds(1, VectSize);
+					GenPhenMapping(v, phenotype);
+					Agent.SetController(phenotype);
+					Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+					Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+					for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+					{
+						if (pos != 0)
+						{
+							for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 1.0)
+							{
+								if (gapsize != BodySize)
+								{
+									for (double reps = 0; reps <= REPS; reps += 1)
+									{
+										Agent.Reset(0, 0, 0);
+										Agent.SetPositionX(0);
+										ObjectRight.SetPositionX((gapsize/2)+(OBJECTHEIGHT/2.0) + pos);
+										ObjectLeft.SetPositionX((-(gapsize/2)-(OBJECTHEIGHT/2.0)) + pos);
+										ObjectRight.SetPositionY(STARTHEIGHT);
+										ObjectLeft.SetPositionY(STARTHEIGHT);
+										for (double t = 0; ObjectLeft.PositionY() > BodySize; t += StepSize) {
+											Agent.Step2InterTwoWayEdgeLesion(rs, StepSize, ObjectLeft, ObjectRight, from, to, outputFrom, outputTo);
+											ObjectLeft.Step(StepSize);
+											ObjectRight.Step(StepSize);
+										}
+										final_distance = fabs(Agent.PositionX() - pos);
+										if (gapsize < BodySize){
+											final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+											fit_avoid += final_distance;
+											trials_avoid += 1;
+										}
+										else {
+											final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+											fit_approach += final_distance;
+											trials_approach += 1;
+										}
+										trials += 1;
+										fit += final_distance;
+									}
+								}
+							}
+						}
+					}
+
+					fit = fit/trials;
+					if (fit > maxfit){
+						maxfit = fit;
+					}
+				}
+			}
+			fitotal << maxfit << " ";
+		}
+		fitotal << endl;
+	}
+	fitotal.close();
+}
 
 void InfoNodeLesionsPA(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
@@ -1950,6 +2027,79 @@ void InfoTwoWayEdgeLesionsCC(TVector<double> &v, TVector<double> &outputj, Rando
 	fiavoid.close();
 }
 
+void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
+{
+	// Interneuron Weights
+	ofstream fitotal("sysedge_iw_B.dat");
+	for (int from = 1; from <= NUMINTER; from++)
+	{
+		for (int to = 1; to <= NUMINTER; to++)
+		{
+			double maxfit = 0.0;
+			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.1)
+			{
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.1)
+				{
+					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
+					int trials = 0, trials_approach = 0, trials_avoid = 0;
+					double final_distance = 0.0;
+					VisualAgent Agent(0.0,0.0,NUMRAYS,NUMINTER,NUMMOTOR);
+					TVector<double> phenotype;
+					phenotype.SetBounds(1, VectSize);
+					GenPhenMapping(v, phenotype);
+					Agent.SetController(phenotype);
+					Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
+					for (double pos = MINPOS; pos <= MAXPOS; pos += 1.0)
+					{
+						if (pos != 0)
+						{
+							for (double size = MINSIZE; size <= MAXSIZE; size += 1.0)
+							{
+								if (size != BodySize)
+								{
+									for (double reps = 0; reps <= REPS; reps += 1)
+									{
+										Agent.Reset(0, 0, 0);
+										Agent.SetPositionX(0);
+										Object.SetPositionY(STARTHEIGHT);
+										Object.SetPositionX(pos);
+										Object.SetSize(size);
+										for (double t = 0; Object.PositionY() > BodySize; t += StepSize) {
+											Agent.StepInterTwoWayEdgeLesion(rs, StepSize, Object, from, to, outputFrom, outputTo);
+											Object.Step(StepSize);
+										}
+										final_distance = fabs(Agent.PositionX() - Object.PositionX());
+										if (size < BodySize){
+											final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+											fit_approach += final_distance;
+											trials_approach += 1;
+										}
+										else {
+											final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
+											fit_avoid += final_distance;
+											trials_avoid += 1;
+										}
+										trials += 1;
+										fit += final_distance;
+									}
+								}
+							}
+						}
+					}
+					fit = fit/trials;
+					if (fit > maxfit){
+						maxfit = fit;
+					}
+				}
+			}
+			fitotal << maxfit << " ";
+		}
+		fitotal << endl;
+	}
+	fitotal.close();
+}
+
 void InfoNodeLesionsCC(TVector<double> &v, TVector<double> &outputj, RandomState &rs)
 {
 
@@ -2114,19 +2264,20 @@ int main (int argc, const char* argv[])
 	TVector<double> bestVector(1, VectSize);
 	BestIndividualFile.open("best.gen.dat");
 	BestIndividualFile >> bestVector;
-	ifstream avgOutputsFile;
-	TVector<double> avgOutputs(1, TOTALN);
-	avgOutputsFile.open("avgoutputs.dat");
-	avgOutputsFile >> avgOutputs;
+	// ifstream avgOutputsFile;
+	// TVector<double> avgOutputs(1, TOTALN);
+	// avgOutputsFile.open("avgoutputs.dat");
+	// avgOutputsFile >> avgOutputs;
 	// BehaviorCC(bestVector, rs);
 	// BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
 	// EdgeLesionsCC(bestVector, rs);
 	// EdgeLesionsPA(bestVector, rs);
-	InfoTwoWayEdgeLesionsPA(bestVector, avgOutputs, rs);
+	SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
+	//SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
 	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
-	InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
+	//InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);
 	return 0;
 }
