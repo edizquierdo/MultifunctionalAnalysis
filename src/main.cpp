@@ -1070,13 +1070,13 @@ void SystematicInfoTwoWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 	ofstream fitotal("sysedge_iw_A.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
-		for (int to = 1; to <= NUMINTER; to++)
+		for (int to = 1; to <= from; to++)
 		{
 			double maxfit = 0.0;
 			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
-			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.1)
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.01)
 			{
-				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.1)
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.01)
 				{
 					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 					int trials = 0, trials_approach = 0, trials_avoid = 0;
@@ -1134,9 +1134,8 @@ void SystematicInfoTwoWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 					}
 				}
 			}
-			fitotal << maxfit << " ";
+			fitotal << from << " " << to << " " << maxfit << endl;
 		}
-		fitotal << endl;
 	}
 	fitotal.close();
 }
@@ -2031,15 +2030,15 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 {
 	// Interneuron Weights
 	ofstream fitotal("sysedge_iw_B.dat");
-	for (int from = 1; from <= 2; from++)
+	for (int from = 1; from <= NUMINTER; from++)
 	{
-		for (int to = 1; to <= 2; to++)
+		for (int to = 1; to <= from; to++)
 		{
 			double maxfit = 0.0;
 			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
-			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.1)
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.01)
 			{
-				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.1)
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.01)
 				{
 					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 					int trials = 0, trials_approach = 0, trials_avoid = 0;
@@ -2091,12 +2090,10 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 					if (fit > maxfit){
 						maxfit = fit;
 					}
-					cout << from << " " << to << " " << outputFrom << " " << outputTo << " " << fit << " " << maxfit << endl;
 				}
 			}
-			fitotal << maxfit << " ";
+			fitotal << from << " " << to << " " << maxfit << endl;
 		}
-		fitotal << endl;
 	}
 	fitotal.close();
 }
@@ -2275,8 +2272,8 @@ int main (int argc, const char* argv[])
 	// GeneralizationPA(bestVector, rs);
 	// EdgeLesionsCC(bestVector, rs);
 	// EdgeLesionsPA(bestVector, rs);
-	//SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
-	SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
+	SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
+	//SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
 	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
 	//InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);
