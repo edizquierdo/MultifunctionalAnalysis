@@ -101,6 +101,7 @@ class CTRNN {
         void EulerStep(double stepsize);
         void EulerStepLesionedNode(double stepsize, int lj, double outputj);
         void EulerStepLesionedEdge(double stepsize, int lj, int li, double outputj);
+        void EulerStepTwoWayLesionedEdge(double stepsize, int lj, int li, double outputj, double outputi);
         void RK4Step(double stepsize);
 
         int size;

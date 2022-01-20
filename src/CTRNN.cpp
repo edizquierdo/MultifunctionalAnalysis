@@ -196,6 +196,30 @@ void CTRNN::EulerStepLesionedEdge(double stepsize, int lj, int li, double output
     outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
 }
 
+void CTRNN::EulerStepTwoWayLesionedEdge(double stepsize, int from, int to, double outputFrom, double outputTo)
+{
+  // Update the state of all neurons.
+  for (int i = 1; i <= size; i++) {
+    double input = externalinputs[i];
+    for (int j = 1; j <= size; j++){
+      if ((i==from) && (j==to)){
+        input += weights[from][to] * outputFrom;
+      }
+      else{
+        if ((i==to) && (j==from)){
+          input += weights[to][from] * outputTo;
+        }
+        else{
+          input += weights[j][i] * outputs[j];
+        }
+      }
+    }
+    states[i] += stepsize * Rtaus[i] * (input - states[i]);
+  }
+  // Update the outputs of all neurons.
+  for (int i = 1; i <= size; i++)
+    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
+}
 
 // Integrate a circuit one step using 4th-order Runge-Kutta.
 
