@@ -152,50 +152,6 @@ void CTRNN::EulerStep(double stepsize)
     outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
 }
 
-// INFORMATIONAL LESION TO NODE
-
-void CTRNN::EulerStepLesionedNode(double stepsize, int lj, double outputj)
-{
-  // Update the state of all neurons.
-  for (int i = 1; i <= size; i++) {
-    double input = externalinputs[i];
-    for (int j = 1; j <= size; j++){
-      if (j == lj) {
-        input += weights[j][i] * outputj;
-      }
-      else{
-        input += weights[j][i] * outputs[j];
-      }
-    }
-    states[i] += stepsize * Rtaus[i] * (input - states[i]);
-  }
-  // Update the outputs of all neurons.
-  for (int i = 1; i <= size; i++)
-    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
-}
-
-// INFORMATIONAL LESION TO EDGE
-
-void CTRNN::EulerStepLesionedEdge(double stepsize, int lj, int li, double outputj)
-{
-  // Update the state of all neurons.
-  for (int i = 1; i <= size; i++) {
-    double input = externalinputs[i];
-    for (int j = 1; j <= size; j++){
-      if ((i==li) && (j==lj)){
-        input += weights[j][i] * outputj;
-      }
-      else{
-        input += weights[j][i] * outputs[j];
-      }
-    }
-    states[i] += stepsize * Rtaus[i] * (input - states[i]);
-  }
-  // Update the outputs of all neurons.
-  for (int i = 1; i <= size; i++)
-    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
-}
-
 void CTRNN::EulerStepTwoWayLesionedEdge(double stepsize, int from, int to, double outputFrom, double outputTo)
 {
   // Update the state of all neurons.
@@ -212,6 +168,26 @@ void CTRNN::EulerStepTwoWayLesionedEdge(double stepsize, int from, int to, doubl
         else{
           input += weights[j][i] * outputs[j];
         }
+      }
+    }
+    states[i] += stepsize * Rtaus[i] * (input - states[i]);
+  }
+  // Update the outputs of all neurons.
+  for (int i = 1; i <= size; i++)
+    outputs[i] = sigmoid(gains[i] * (states[i] + biases[i]));
+}
+
+void CTRNN::EulerStepOneWayLesionedEdge(double stepsize, int from, int to, double outputFrom)
+{
+  // Update the state of all neurons.
+  for (int i = 1; i <= size; i++) {
+    double input = externalinputs[i];
+    for (int j = 1; j <= size; j++){
+      if ((i==from) && (j==to)){
+        input += weights[from][to] * outputFrom;
+      }
+      else{
+        input += weights[j][i] * outputs[j];
       }
     }
     states[i] += stepsize * Rtaus[i] * (input - states[i]);

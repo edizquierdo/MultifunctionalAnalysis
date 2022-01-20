@@ -61,16 +61,12 @@ class VisualAgent {
     void Reset(RandomState &rs, double ix, double iy, int randomize);
 
 		void Step(RandomState &rs, double StepSize, VisualObject &object);
-		void StepNodeLesion(RandomState &rs, double StepSize, VisualObject &object, int lj, double outputj);
-		void StepSensorEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int lj, int li, double outputj);
-		void StepInterEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int from, int to, double outputj);
 		void StepInterTwoWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int from, int to, double outputFrom, double outputTo);
+		void StepInterOneWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object, int from, int to, double outputFrom);
 
 		void Step2(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2);
-		void Step2NodeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, double outputj);
-		void Step2SensorEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, int li, double outputj);
-		void Step2InterEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int lj, int li, double outputj);
 		void Step2InterTwoWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int from, int to, double outputFrom, double outputTo);
+		void Step2InterOneWayEdgeLesion(RandomState &rs, double StepSize, VisualObject &object1, VisualObject &object2, int from, int to, double outputFrom);
 
 		CTRNN NervousSystem;
 		TVector<double> ExternalInput;
