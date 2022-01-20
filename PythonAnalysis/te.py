@@ -1,3 +1,6 @@
+"""
+https://arxiv.org/pdf/1102.1507.pdf
+"""
 import os
 import glob
 from collections import OrderedDict
@@ -40,20 +43,21 @@ def fc_te(data_dir, task_name, subtask_name, num_neurons, show=True):
             it.set_bin_boundaries([neuron_bins, neuron_bins, neuron_bins])
             d = np.vstack([all_neuron_dat[ni][:-1], all_neuron_dat[nj][:-1], all_neuron_dat[nj][1:]]).T
             it.add_data(d)
-            te = it.mutual_info([1, 1, 0]) - it.unique_info([2, 1, 0])
+            te = it.mutual_info([1, 1, 0]) - it.mutual_info([-1, 1, 0])
             tes[ni, nj] = te
+            del it
 
             # j to i
             it = infotheory.InfoTools(dims, nreps)
             it.set_bin_boundaries([neuron_bins, neuron_bins, neuron_bins])
             d = np.vstack([all_neuron_dat[nj][:-1], all_neuron_dat[ni][:-1], all_neuron_dat[ni][1:]]).T
             it.add_data(d)
-            te = it.mutual_info([1, 1, 0]) - it.unique_info([2, 1, 0])
+            te = it.mutual_info([1, 1, 0]) - it.mutual_info([-1, 1, 0])
             tes[nj, ni] = te
 
     # plot
     if show:
-        plt.imshow(tes, aspect="equal", origin="lower", vmin=0, vmax=1)
+        plt.imshow(tes, aspect="equal", origin="lower") #, vmin=0, vmax=1)
         plt.xlabel("Neuron #")
         plt.ylabel("Neuron #")
         plt.xticks(np.arange(num_neurons), np.arange(1, num_neurons + 1))
