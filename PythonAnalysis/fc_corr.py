@@ -1,5 +1,6 @@
 import os
 import glob
+import tqdm
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
     for tag, count in num_neurons.items():
         for ni in range(count):
             relevant_files = "{}_{}_{}{}.dat".format(task_name, subtask_name, tag, ni + 1)
-            print(relevant_files)
+            # print(relevant_files)
 
             # read and plot data for this neuron -- each file is one subtask
             neuron_dat = []
@@ -39,15 +40,15 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
     all_neuron_diffs = [d - m for d, m in zip(all_neuron_dat, neuron_means)]
 
     fc = []
-    for ni in range(num_neurons):
-        _fc_row = []
-        ni_prod = all_neuron_diffs
+    for ni in tqdm.tqdm(range(num_neurons), desc="FC_Corr"):
         for nj in range(num_neurons):
-            _fc_row.append(corr(all_neuron_diffs[ni], all_neuron_diffs[nj]))
-        fc.append(_fc_row)
+            fc.append([ni, nj, corr(all_neuron_diffs[ni], all_neuron_diffs[nj])])
+
+    fc = np.array(fc)
 
     if show:
-        plt.imshow(fc, aspect="equal", origin="lower", vmin=-1, vmax=1, cmap="Spectral")
+        fc_mat = np.reshape(fc[:, -1], [num_neurons, num_neurons])
+        plt.imshow(fc_mat, aspect="equal", origin="lower", vmin=-1, vmax=1, cmap="Spectral")
         plt.colorbar()
         plt.xlabel("neuron #")
         plt.ylabel("neuron #")
@@ -58,7 +59,8 @@ def fc_corr_across_trials(data_dir, task_name, subtask_name, num_neurons, show=T
         # plt.show()
 
     fc = np.array(fc)
-    return fc[np.triu_indices(num_neurons, k=1)]
+    # return fc[np.triu_indices(num_neurons, k=1)]
+    return fc
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import os
 import glob
+import tqdm
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +14,7 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
     for tag, count in num_neurons.items():
         for ni in range(count):
             relevant_files = "{}_{}_{}{}.dat".format(task_name, subtask_name, tag, ni + 1)
-            print(relevant_files)
+            # print(relevant_files)
 
             # read and plot data for this neuron -- each file is one subtask
             neuron_dat = []
@@ -32,22 +33,25 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
     neuron_bins = np.linspace(0, 1, 200)
 
     # find mis for all combinations
-    mis = np.zeros([num_neurons, num_neurons])
-    for ni in range(num_neurons):
+    mis = []  # np.zeros([num_neurons, num_neurons])
+    for ni in tqdm.tqdm(range(num_neurons), desc="FC_MI"):
         for nj in range(ni, num_neurons):
             it = infotheory.InfoTools(dims, nreps)
             it.set_bin_boundaries([neuron_bins, neuron_bins])
             d = np.vstack([all_neuron_dat[ni], all_neuron_dat[nj]]).T
             it.add_data(d)
             mi = it.mutual_info([0, 1])
-            mis[ni, nj] = mi
-            mis[nj, ni] = mi
-    print("Max = {}".format(np.max(mis)))
-    mis /= 4.10439820533  # max across all conditions of task and subtask -- need a better method
+            mi /= 4.10439820533  # max across all conditions of task and subtask -- need a better method
+            mis.append([ni, nj, mi])
+            if ni != nj:
+                mis.append([nj, ni, mi])
+
+    mis = np.array(mis)
 
     # plot
     if show:
-        plt.imshow(mis, aspect="equal", origin="lower", vmin=0, vmax=1)
+        mis_mat = np.reshape(mis[:, -1], [num_neurons, num_neurons])
+        plt.imshow(mis_mat, aspect="equal", origin="lower", vmin=0, vmax=1)
         plt.xlabel("Neuron #")
         plt.ylabel("Neuron #")
         plt.xticks(np.arange(num_neurons), np.arange(1, num_neurons + 1))
