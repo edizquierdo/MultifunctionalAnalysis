@@ -5,13 +5,13 @@
 #include "random.h"
 #include "VisualAgent.h"
 
-// #define EVOLVE
-// #define PRINTTOFILE
+#define EVOLVE
+#define PRINTTOFILE
 
 using namespace std;
 
 // EA constants
-const int	POPSIZE = 80;
+const int POPSIZE = 96;
 const int GENS = 1000;
 
 // Global constants
@@ -39,9 +39,9 @@ const double MINSIZE = 20.0; //20.0; // Diameter of agent is 30
 const double MAXSIZE = 40.0; //40.0;
 const double SIZESTEP = 1.0; //0.5;
 // Pos
-const double MINPOS = 1; //5;
-const double MAXPOS = 5; //6; //10;
-const double POSSTEP = 1; //5;
+const double MINPOS = 1;
+const double MAXPOS = 50;
+const double POSSTEP = 5;
 // Start vertical position of objects
 const double STARTHEIGHT = 240; //275
 const double OBJECTHEIGHT = 30;
@@ -1537,9 +1537,9 @@ int main (int argc, const char* argv[]) {
 	s.SetSearchResultsDisplayFunction(ResultsDisplay);
 	s.SetSelectionMode(RANK_BASED);
 	s.SetReproductionMode(GENETIC_ALGORITHM);
-	s.SetPopulationSize(POPSIZE); //200
-	s.SetMaxGenerations(GENS);  //100
-	s.SetMutationVariance(0.01); //8.0
+	s.SetPopulationSize(POPSIZE);
+	s.SetMaxGenerations(GENS);
+	s.SetMutationVariance(0.01);
 	s.SetCrossoverProbability(0.5);
 	s.SetCrossoverMode(UNIFORM);
 	s.SetMaxExpectedOffspring(1.1);
@@ -1554,11 +1554,9 @@ int main (int argc, const char* argv[]) {
 	evolfile.open("fitness.dat");
 	cout.rdbuf(evolfile.rdbuf());
 	#endif
-	// TASK 2: Object-size Categorization
+
 	s.SetSearchTerminationFunction(NULL);
-	//s.SetEvaluationFunction(CircleSizeCategorization);//B
-	//s.SetEvaluationFunction(PerceiveAffordance); //A
-	s.SetEvaluationFunction(MultipleTasks);//C
+	s.SetEvaluationFunction(MultipleTasks);
 	s.ExecuteSearch();
 
 	#ifdef PRINTTOFILE
