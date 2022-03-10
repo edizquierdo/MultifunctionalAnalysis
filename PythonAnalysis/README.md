@@ -1,4 +1,4 @@
-## Python analysis 
+## Python analysis
 
 ### Setup
 
@@ -6,7 +6,7 @@
 pip install -r requirement.txt
 ```
 
-### Run Analysis 
+### Run Analysis
 
 ```bash
 python analyze_agent.py ../TimeSeries/86 A

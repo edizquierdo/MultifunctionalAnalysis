@@ -12,7 +12,8 @@ from fc_te import fc_te
 
 
 def analyze_agent(data_dir, task_name, num_neurons, results_dir):
-    subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
+    #subtasks = {"A": ["approach", "avoid", "*"], "B": ["approach", "avoid", "*"], "*": ["*"]}
+    subtasks = {"A": ["*"], "B": ["*"], "*": ["*"]}
     for subtask_name in subtasks[task_name]:
         print(task_name + " - " + subtask_name)
         if task_name == "*":
@@ -61,9 +62,9 @@ if __name__ == "__main__":
 
     # analysis constant args
     num_neurons = OrderedDict()
-    num_neurons["s"] = 15
+    num_neurons["s"] = 0 #15
     num_neurons["n"] = 7
-    num_neurons["m"] = 2
+    num_neurons["m"] = 0 #2
 
     results_dir = os.path.join(data_dir, "alife_2022")
     if "s" in num_neurons and "m" in num_neurons:

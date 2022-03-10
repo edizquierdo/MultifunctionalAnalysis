@@ -39,7 +39,7 @@ const double MINSIZE = 20.0; //20.0; // Diameter of agent is 30
 const double MAXSIZE = 40.0; //40.0;
 const double SIZESTEP = 2.0; //0.5;
 // Pos
-const double MINPOS = -25;
+const double MINPOS = 0; //-25;
 const double MAXPOS = 25;
 const double POSSTEP = 2;
 // Start vertical position of objects
@@ -658,13 +658,13 @@ void SystematicInfoTwoWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 	ofstream fitotal("sysedge_iw_A.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
-		for (int to = 1; to <= from; to++)
+		for (int to = 1; to <= NUMINTER; to++)
 		{
 			double maxfit = 0.0;
 			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
-			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.01)
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.05)
 			{
-				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.01)
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.05)
 				{
 					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 					int trials = 0, trials_approach = 0, trials_avoid = 0;
@@ -722,7 +722,7 @@ void SystematicInfoTwoWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 					}
 				}
 			}
-			fitotal << from << " " << to << " " << maxfit << endl;
+			fitotal << from-1 << " " << to-1 << " " << maxfit << endl;
 		}
 	}
 	fitotal.close();
@@ -732,7 +732,7 @@ void SystematicInfoOneWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 {
 
 	// Interneuron Weights
-	ofstream fitotal("oneway_sysedge_iw_A.dat");
+	ofstream fitotal("oneway_sysedge_iw_Ax.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
@@ -796,7 +796,7 @@ void SystematicInfoOneWayEdgeLesionsPA(TVector<double> &v, RandomState &rs)
 						maxfit = fit;
 					}
 				}
-			fitotal << from << " " << to << " " << maxfit << endl;
+			fitotal << from-1 << " " << to-1 << " " << maxfit << endl;
 		}
 	}
 	fitotal.close();
@@ -1229,13 +1229,13 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 	ofstream fitotal("sysedge_iw_B.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
-		for (int to = 1; to <= from; to++)
+		for (int to = 1; to <= NUMINTER; to++)
 		{
 			double maxfit = 0.0;
 			// Find the combination of pair of outputs that results in the higest fitness for this pair of neurons
-			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.01)
+			for (double outputFrom = 0.0; outputFrom <= 1.0; outputFrom += 0.05)
 			{
-				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.01)
+				for (double outputTo = 0.0; outputTo <= 1.0; outputTo += 0.05)
 				{
 					double fit = 0.0, fit_avoid = 0.0, fit_approach = 0.0;
 					int trials = 0, trials_approach = 0, trials_avoid = 0;
@@ -1289,7 +1289,7 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 					}
 				}
 			}
-			fitotal << from << " " << to << " " << maxfit << endl;
+			fitotal << from-1 << " " << to-1 << " " << maxfit << endl;
 		}
 	}
 	fitotal.close();
@@ -1298,7 +1298,7 @@ void SystematicInfoTwoWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 void SystematicInfoOneWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 {
 	// Interneuron Weights
-	ofstream fitotal("oneway_sysedge_iw_B.dat");
+	ofstream fitotal("oneway_sysedge_iw_Bx.dat");
 	for (int from = 1; from <= NUMINTER; from++)
 	{
 		for (int to = 1; to <= NUMINTER; to++)
@@ -1358,7 +1358,7 @@ void SystematicInfoOneWayEdgeLesionsCC(TVector<double> &v, RandomState &rs)
 						maxfit = fit;
 					}
 			}
-			fitotal << from << " " << to << " " << maxfit << endl;
+			fitotal << from-1 << " " << to-1 << " " << maxfit << endl;
 		}
 	}
 	fitotal.close();
@@ -1464,19 +1464,14 @@ int main (int argc, const char* argv[])
 	// TVector<double> avgOutputs(1, TOTALN);
 	// avgOutputsFile.open("avgoutputs.dat");
 	// avgOutputsFile >> avgOutputs;
-	BehaviorCC(bestVector, rs);
-	BehaviorPA(bestVector, rs);
+	// BehaviorCC(bestVector, rs);
+	// BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
-	// EdgeLesionsCC(bestVector, rs);
-	// EdgeLesionsPA(bestVector, rs);
 	//SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
 	//SystematicInfoOneWayEdgeLesionsPA(bestVector, rs);
-	//SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
-	//SystematicInfoOneWayEdgeLesionsCC(bestVector, rs);
-	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
-	//InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
-	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);
+	// SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
+	SystematicInfoOneWayEdgeLesionsCC(bestVector, rs);
 	return 0;
 }
 #endif
