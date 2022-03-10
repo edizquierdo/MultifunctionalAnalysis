@@ -5,8 +5,8 @@
 #include "random.h"
 #include "VisualAgent.h"
 
-#define EVOLVE
-#define PRINTTOFILE
+// #define EVOLVE
+// #define PRINTTOFILE
 
 using namespace std;
 
@@ -24,7 +24,7 @@ const int H_NUMRAYS = 8;
 const int H_NUMINTER = 4;
 const int H_NUMMOTOR = 1;
 
-const double StepSize = 0.01;
+const double StepSize = 0.1;
 const double MAXDISTANCE = 75.0;
 
 const double PI = 3.14159265359;
@@ -37,11 +37,11 @@ const double VELSTEP = 0.5;
 // Size
 const double MINSIZE = 20.0; //20.0; // Diameter of agent is 30
 const double MAXSIZE = 40.0; //40.0;
-const double SIZESTEP = 1.0; //0.5;
+const double SIZESTEP = 2.0; //0.5;
 // Pos
-const double MINPOS = 1;
-const double MAXPOS = 50;
-const double POSSTEP = 5;
+const double MINPOS = -25;
+const double MAXPOS = 25;
+const double POSSTEP = 2;
 // Start vertical position of objects
 const double STARTHEIGHT = 240; //275
 const double OBJECTHEIGHT = 30;
@@ -314,13 +314,11 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 {
 	ofstream avoid_posx,approach_posx;
 	ofstream avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7;
-	// ofstream avoid_n8,avoid_n9,avoid_n10,avoid_n11,avoid_n12,avoid_n13,avoid_n14,avoid_n15;
 	ofstream approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
-	// ofstream approach_n8,approach_n9,approach_n10,approach_n11,approach_n12,approach_n13,approach_n14,approach_n15;
-	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,avoid_s8,avoid_s9,avoid_s10,avoid_s11,avoid_s12,avoid_s13,avoid_s14,avoid_s15;
-	ofstream approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7,approach_s8,approach_s9,approach_s10,approach_s11,approach_s12,approach_s13,approach_s14,approach_s15;
-	ofstream avoid_m1,avoid_m2;
-	ofstream approach_m1,approach_m2;
+	// ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,avoid_s8,avoid_s9,avoid_s10,avoid_s11,avoid_s12,avoid_s13,avoid_s14,avoid_s15;
+	// ofstream approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7,approach_s8,approach_s9,approach_s10,approach_s11,approach_s12,approach_s13,approach_s14,approach_s15;
+	// ofstream avoid_m1,avoid_m2;
+	// ofstream approach_m1,approach_m2;
 
 	avoid_posx.open("A_avoid_aposx.dat");
 	avoid_n1.open("A_avoid_n1.dat");
@@ -330,14 +328,6 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	avoid_n5.open("A_avoid_n5.dat");
 	avoid_n6.open("A_avoid_n6.dat");
 	avoid_n7.open("A_avoid_n7.dat");
-	// avoid_n8.open("A_avoid_n8.dat");
-	// avoid_n9.open("A_avoid_n9.dat");
-	// avoid_n10.open("A_avoid_n10.dat");
-	// avoid_n11.open("A_avoid_n11.dat");
-	// avoid_n12.open("A_avoid_n12.dat");
-	// avoid_n13.open("A_avoid_n13.dat");
-	// avoid_n14.open("A_avoid_n14.dat");
-	// avoid_n15.open("A_avoid_n15.dat");
 
 	approach_posx.open("A_approach_aposx.dat");
 	approach_n1.open("A_approach_n1.dat");
@@ -347,52 +337,44 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	approach_n5.open("A_approach_n5.dat");
 	approach_n6.open("A_approach_n6.dat");
 	approach_n7.open("A_approach_n7.dat");
-	// approach_n8.open("A_approach_n8.dat");
-	// approach_n9.open("A_approach_n9.dat");
-	// approach_n10.open("A_approach_n10.dat");
-	// approach_n11.open("A_approach_n11.dat");
-	// approach_n12.open("A_approach_n12.dat");
-	// approach_n13.open("A_approach_n13.dat");
-	// approach_n14.open("A_approach_n14.dat");
-	// approach_n15.open("A_approach_n15.dat");
 
-	avoid_s1.open("A_avoid_s1.dat");
-	avoid_s2.open("A_avoid_s2.dat");
-	avoid_s3.open("A_avoid_s3.dat");
-	avoid_s4.open("A_avoid_s4.dat");
-	avoid_s5.open("A_avoid_s5.dat");
-	avoid_s6.open("A_avoid_s6.dat");
-	avoid_s7.open("A_avoid_s7.dat");
-	avoid_s8.open("A_avoid_s8.dat");
-	avoid_s9.open("A_avoid_s9.dat");
-	avoid_s10.open("A_avoid_s10.dat");
-	avoid_s11.open("A_avoid_s11.dat");
-	avoid_s12.open("A_avoid_s12.dat");
-	avoid_s13.open("A_avoid_s13.dat");
-	avoid_s14.open("A_avoid_s14.dat");
-	avoid_s15.open("A_avoid_s15.dat");
+	// avoid_s1.open("A_avoid_s1.dat");
+	// avoid_s2.open("A_avoid_s2.dat");
+	// avoid_s3.open("A_avoid_s3.dat");
+	// avoid_s4.open("A_avoid_s4.dat");
+	// avoid_s5.open("A_avoid_s5.dat");
+	// avoid_s6.open("A_avoid_s6.dat");
+	// avoid_s7.open("A_avoid_s7.dat");
+	// avoid_s8.open("A_avoid_s8.dat");
+	// avoid_s9.open("A_avoid_s9.dat");
+	// avoid_s10.open("A_avoid_s10.dat");
+	// avoid_s11.open("A_avoid_s11.dat");
+	// avoid_s12.open("A_avoid_s12.dat");
+	// avoid_s13.open("A_avoid_s13.dat");
+	// avoid_s14.open("A_avoid_s14.dat");
+	// avoid_s15.open("A_avoid_s15.dat");
 
-	avoid_m1.open("A_avoid_m1.dat");
-	avoid_m2.open("A_avoid_m2.dat");
+	// avoid_m1.open("A_avoid_m1.dat");
+	// avoid_m2.open("A_avoid_m2.dat");
 
-	approach_s1.open("A_approach_s1.dat");
-	approach_s2.open("A_approach_s2.dat");
-	approach_s3.open("A_approach_s3.dat");
-	approach_s4.open("A_approach_s4.dat");
-	approach_s5.open("A_approach_s5.dat");
-	approach_s6.open("A_approach_s6.dat");
-	approach_s7.open("A_approach_s7.dat");
-	approach_s8.open("A_approach_s8.dat");
-	approach_s9.open("A_approach_s9.dat");
-	approach_s10.open("A_approach_s10.dat");
-	approach_s11.open("A_approach_s11.dat");
-	approach_s12.open("A_approach_s12.dat");
-	approach_s13.open("A_approach_s13.dat");
-	approach_s14.open("A_approach_s14.dat");
-	approach_s15.open("A_approach_s15.dat");
+	// approach_s1.open("A_approach_s1.dat");
+	// approach_s2.open("A_approach_s2.dat");
+	// approach_s3.open("A_approach_s3.dat");
+	// approach_s4.open("A_approach_s4.dat");
+	// approach_s5.open("A_approach_s5.dat");
+	// approach_s6.open("A_approach_s6.dat");
+	// approach_s7.open("A_approach_s7.dat");
+	// approach_s8.open("A_approach_s8.dat");
+	// approach_s9.open("A_approach_s9.dat");
+	// approach_s10.open("A_approach_s10.dat");
+	// approach_s11.open("A_approach_s11.dat");
+	// approach_s12.open("A_approach_s12.dat");
+	// approach_s13.open("A_approach_s13.dat");
+	// approach_s14.open("A_approach_s14.dat");
+	// approach_s15.open("A_approach_s15.dat");
 
-	approach_m1.open("A_approach_m1.dat");
-	approach_m2.open("A_approach_m2.dat");
+	// approach_m1.open("A_approach_m1.dat");
+	// approach_m2.open("A_approach_m2.dat");
 
 	//--
 	double fit = 0.0;
@@ -426,7 +408,7 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 							ObjectLeft.Step(StepSize);
 							ObjectRight.Step(StepSize);
 							if (gapsize < BodySize){
-								avoid_posx << Agent.PositionX() - pos << " ";
+								if (pos > 0){
 								avoid_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
 								avoid_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
 								avoid_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
@@ -434,36 +416,30 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 								avoid_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
 								avoid_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
 								avoid_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								// avoid_n8 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								// avoid_n9 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								// avoid_n10 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								// avoid_n11 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								// avoid_n12 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								// avoid_n13 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								// avoid_n14 << Agent.NervousSystem.NeuronOutput(14) << " ";
-								// avoid_n15 << Agent.NervousSystem.NeuronOutput(15) << " ";
+							}
+							avoid_posx << Agent.PositionX() - pos << " ";
 
-								avoid_s1 << Agent.ExternalInput(1) << " ";
-								avoid_s2 << Agent.ExternalInput(2) << " ";
-								avoid_s3 << Agent.ExternalInput(3) << " ";
-								avoid_s4 << Agent.ExternalInput(4) << " ";
-								avoid_s5 << Agent.ExternalInput(5) << " ";
-								avoid_s6 << Agent.ExternalInput(6) << " ";
-								avoid_s7 << Agent.ExternalInput(7) << " ";
-								avoid_s8 << Agent.ExternalInput(8) << " ";
-								avoid_s9 << Agent.ExternalInput(9) << " ";
-								avoid_s10 << Agent.ExternalInput(10) << " ";
-								avoid_s11 << Agent.ExternalInput(11) << " ";
-								avoid_s12 << Agent.ExternalInput(12) << " ";
-								avoid_s13 << Agent.ExternalInput(13) << " ";
-								avoid_s14 << Agent.ExternalInput(14) << " ";
-								avoid_s15 << Agent.ExternalInput(15) << " ";
-
-								avoid_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								avoid_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								// avoid_s1 << Agent.ExternalInput(1) << " ";
+								// avoid_s2 << Agent.ExternalInput(2) << " ";
+								// avoid_s3 << Agent.ExternalInput(3) << " ";
+								// avoid_s4 << Agent.ExternalInput(4) << " ";
+								// avoid_s5 << Agent.ExternalInput(5) << " ";
+								// avoid_s6 << Agent.ExternalInput(6) << " ";
+								// avoid_s7 << Agent.ExternalInput(7) << " ";
+								// avoid_s8 << Agent.ExternalInput(8) << " ";
+								// avoid_s9 << Agent.ExternalInput(9) << " ";
+								// avoid_s10 << Agent.ExternalInput(10) << " ";
+								// avoid_s11 << Agent.ExternalInput(11) << " ";
+								// avoid_s12 << Agent.ExternalInput(12) << " ";
+								// avoid_s13 << Agent.ExternalInput(13) << " ";
+								// avoid_s14 << Agent.ExternalInput(14) << " ";
+								// avoid_s15 << Agent.ExternalInput(15) << " ";
+								//
+								// avoid_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								// avoid_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 							}
 							else {
-								approach_posx << Agent.PositionX() - pos << " ";
+								if (pos > 0){
 								approach_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
 								approach_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
 								approach_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
@@ -471,111 +447,92 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 								approach_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
 								approach_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
 								approach_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								// approach_n8 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								// approach_n9 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								// approach_n10 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								// approach_n11 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								// approach_n12 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								// approach_n13 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								// approach_n14 << Agent.NervousSystem.NeuronOutput(14) << " ";
-								// approach_n15 << Agent.NervousSystem.NeuronOutput(15) << " ";
+							}
+							approach_posx << Agent.PositionX() - pos << " ";
 
-								approach_s1 << Agent.ExternalInput(1) << " ";
-								approach_s2 << Agent.ExternalInput(2) << " ";
-								approach_s3 << Agent.ExternalInput(3) << " ";
-								approach_s4 << Agent.ExternalInput(4) << " ";
-								approach_s5 << Agent.ExternalInput(5) << " ";
-								approach_s6 << Agent.ExternalInput(6) << " ";
-								approach_s7 << Agent.ExternalInput(7) << " ";
-								approach_s8 << Agent.ExternalInput(8) << " ";
-								approach_s9 << Agent.ExternalInput(9) << " ";
-								approach_s10 << Agent.ExternalInput(10) << " ";
-								approach_s11 << Agent.ExternalInput(11) << " ";
-								approach_s12 << Agent.ExternalInput(12) << " ";
-								approach_s13 << Agent.ExternalInput(13) << " ";
-								approach_s14 << Agent.ExternalInput(14) << " ";
-								approach_s15 << Agent.ExternalInput(15) << " ";
-
-								approach_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								approach_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								// approach_s1 << Agent.ExternalInput(1) << " ";
+								// approach_s2 << Agent.ExternalInput(2) << " ";
+								// approach_s3 << Agent.ExternalInput(3) << " ";
+								// approach_s4 << Agent.ExternalInput(4) << " ";
+								// approach_s5 << Agent.ExternalInput(5) << " ";
+								// approach_s6 << Agent.ExternalInput(6) << " ";
+								// approach_s7 << Agent.ExternalInput(7) << " ";
+								// approach_s8 << Agent.ExternalInput(8) << " ";
+								// approach_s9 << Agent.ExternalInput(9) << " ";
+								// approach_s10 << Agent.ExternalInput(10) << " ";
+								// approach_s11 << Agent.ExternalInput(11) << " ";
+								// approach_s12 << Agent.ExternalInput(12) << " ";
+								// approach_s13 << Agent.ExternalInput(13) << " ";
+								// approach_s14 << Agent.ExternalInput(14) << " ";
+								// approach_s15 << Agent.ExternalInput(15) << " ";
+								//
+								// approach_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								// approach_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - pos);
 						if (gapsize < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
-							avoid_posx << endl;
-							avoid_n1 << endl;
-							avoid_n2 << endl;
-							avoid_n3 << endl;
-							avoid_n4 << endl;
-							avoid_n5 << endl;
-							avoid_n6 << endl;
-							avoid_n7 << endl;
-							// avoid_n8 << endl;
-							// avoid_n9 << endl;
-							// avoid_n10 << endl;
-							// avoid_n11 << endl;
-							// avoid_n12 << endl;
-							// avoid_n13 << endl;
-							// avoid_n14 << endl;
-							// avoid_n15 << endl;
+							if (pos > 0) {
+								avoid_n1 << endl;
+								avoid_n2 << endl;
+								avoid_n3 << endl;
+								avoid_n4 << endl;
+								avoid_n5 << endl;
+								avoid_n6 << endl;
+								avoid_n7 << endl;
+						 	}
+						 	avoid_posx << endl;
 
-							avoid_s1 << endl;
-							avoid_s2 << endl;
-							avoid_s3 << endl;
-							avoid_s4 << endl;
-							avoid_s5 << endl;
-							avoid_s6 << endl;
-							avoid_s7 << endl;
-							avoid_s8 << endl;
-							avoid_s9 << endl;
-							avoid_s10 << endl;
-							avoid_s11 << endl;
-							avoid_s12 << endl;
-							avoid_s13 << endl;
-							avoid_s14 << endl;
-							avoid_s15 << endl;
-
-							avoid_m1 << endl;
-							avoid_m2 << endl;
+							// avoid_s1 << endl;
+							// avoid_s2 << endl;
+							// avoid_s3 << endl;
+							// avoid_s4 << endl;
+							// avoid_s5 << endl;
+							// avoid_s6 << endl;
+							// avoid_s7 << endl;
+							// avoid_s8 << endl;
+							// avoid_s9 << endl;
+							// avoid_s10 << endl;
+							// avoid_s11 << endl;
+							// avoid_s12 << endl;
+							// avoid_s13 << endl;
+							// avoid_s14 << endl;
+							// avoid_s15 << endl;
+							//
+							// avoid_m1 << endl;
+							// avoid_m2 << endl;
 						}
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
+							if (pos > 0) {
+								approach_n1 << endl;
+								approach_n2 << endl;
+								approach_n3 << endl;
+								approach_n4 << endl;
+								approach_n5 << endl;
+								approach_n6 << endl;
+								approach_n7 << endl;
+							}
 							approach_posx << endl;
-							approach_n1 << endl;
-							approach_n2 << endl;
-							approach_n3 << endl;
-							approach_n4 << endl;
-							approach_n5 << endl;
-							approach_n6 << endl;
-							approach_n7 << endl;
-							// approach_n8 << endl;
-							// approach_n9 << endl;
-							// approach_n10 << endl;
-							// approach_n11 << endl;
-							// approach_n12 << endl;
-							// approach_n13 << endl;
-							// approach_n14 << endl;
-							// approach_n15 << endl;
-
-							approach_s1 << endl;
-							approach_s2 << endl;
-							approach_s3 << endl;
-							approach_s4 << endl;
-							approach_s5 << endl;
-							approach_s6 << endl;
-							approach_s7 << endl;
-							approach_s8 << endl;
-							approach_s9 << endl;
-							approach_s10 << endl;
-							approach_s11 << endl;
-							approach_s12 << endl;
-							approach_s13 << endl;
-							approach_s14 << endl;
-							approach_s15 << endl;
-
-							approach_m1 << endl;
-							approach_m2 << endl;
+							// approach_s1 << endl;
+							// approach_s2 << endl;
+							// approach_s3 << endl;
+							// approach_s4 << endl;
+							// approach_s5 << endl;
+							// approach_s6 << endl;
+							// approach_s7 << endl;
+							// approach_s8 << endl;
+							// approach_s9 << endl;
+							// approach_s10 << endl;
+							// approach_s11 << endl;
+							// approach_s12 << endl;
+							// approach_s13 << endl;
+							// approach_s14 << endl;
+							// approach_s15 << endl;
+							//
+							// approach_m1 << endl;
+							// approach_m2 << endl;
 						}
 						trials += 1;
 						fit += final_distance;
@@ -595,33 +552,25 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	avoid_n5.close();
 	avoid_n6.close();
 	avoid_n7.close();
-	// avoid_n8.close();
-	// avoid_n9.close();
-	// avoid_n10.close();
-	// avoid_n11.close();
-	// avoid_n12.close();
-	// avoid_n13.close();
-	// avoid_n14.close();
-	// avoid_n15.close();
 
-	avoid_s1.close();
-	avoid_s2.close();
-	avoid_s3.close();
-	avoid_s4.close();
-	avoid_s5.close();
-	avoid_s6.close();
-	avoid_s7.close();
-	avoid_s8.close();
-	avoid_s9.close();
-	avoid_s10.close();
-	avoid_s11.close();
-	avoid_s12.close();
-	avoid_s13.close();
-	avoid_s14.close();
-	avoid_s15.close();
+	// avoid_s1.close();
+	// avoid_s2.close();
+	// avoid_s3.close();
+	// avoid_s4.close();
+	// avoid_s5.close();
+	// avoid_s6.close();
+	// avoid_s7.close();
+	// avoid_s8.close();
+	// avoid_s9.close();
+	// avoid_s10.close();
+	// avoid_s11.close();
+	// avoid_s12.close();
+	// avoid_s13.close();
+	// avoid_s14.close();
+	// avoid_s15.close();
 
-	avoid_m1.close();
-	avoid_m2.close();
+	// avoid_m1.close();
+	// avoid_m2.close();
 
 	approach_posx.close();
 	approach_n1.close();
@@ -631,33 +580,25 @@ void BehaviorPA(TVector<double> &v, RandomState &rs)
 	approach_n5.close();
 	approach_n6.close();
 	approach_n7.close();
-	// approach_n8.close();
-	// approach_n9.close();
-	// approach_n10.close();
-	// approach_n11.close();
-	// approach_n12.close();
-	// approach_n13.close();
-	// approach_n14.close();
-	// approach_n15.close();
 
-	approach_s1.close();
-	approach_s2.close();
-	approach_s3.close();
-	approach_s4.close();
-	approach_s5.close();
-	approach_s6.close();
-	approach_s7.close();
-	approach_s8.close();
-	approach_s9.close();
-	approach_s10.close();
-	approach_s11.close();
-	approach_s12.close();
-	approach_s13.close();
-	approach_s14.close();
-	approach_s15.close();
+	// approach_s1.close();
+	// approach_s2.close();
+	// approach_s3.close();
+	// approach_s4.close();
+	// approach_s5.close();
+	// approach_s6.close();
+	// approach_s7.close();
+	// approach_s8.close();
+	// approach_s9.close();
+	// approach_s10.close();
+	// approach_s11.close();
+	// approach_s12.close();
+	// approach_s13.close();
+	// approach_s14.close();
+	// approach_s15.close();
 
-	approach_m1.close();
-	approach_m2.close();
+	// approach_m1.close();
+	// approach_m2.close();
 }
 
 void GeneralizationPA(TVector<double> &v, RandomState &rs)
@@ -676,9 +617,9 @@ void GeneralizationPA(TVector<double> &v, RandomState &rs)
 	Agent.SetController(phenotype);
 	Line ObjectLeft(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
 	Line ObjectRight(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
-	for (double pos = 1.0; pos <= 5.0; pos += 0.01)
+	for (double pos = MINPOS; pos <= MAXPOS; pos += 0.1)
 	{
-		for (double gapsize = 20.0; gapsize <= 40.0; gapsize += 0.05)
+		for (double gapsize = MINSIZE; gapsize <= MAXSIZE; gapsize += 0.1)
 		{
 			Agent.Reset(0, 0, 0);
 			Agent.SetPositionX(0);
@@ -918,13 +859,11 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 {
 	ofstream avoid_posx,approach_posx;
 	ofstream avoid_n1,avoid_n2,avoid_n3,avoid_n4,avoid_n5,avoid_n6,avoid_n7;
-	// ofstream avoid_n8,avoid_n9,avoid_n10,avoid_n11,avoid_n12,avoid_n13,avoid_n14,avoid_n15;
 	ofstream approach_n1,approach_n2,approach_n3,approach_n4,approach_n5,approach_n6,approach_n7;
-	// ofstream approach_n8,approach_n9,approach_n10,approach_n11,approach_n12,approach_n13,approach_n14,approach_n15;
-	ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,avoid_s8,avoid_s9,avoid_s10,avoid_s11,avoid_s12,avoid_s13,avoid_s14,avoid_s15;
-	ofstream approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7,approach_s8,approach_s9,approach_s10,approach_s11,approach_s12,approach_s13,approach_s14,approach_s15;
-	ofstream avoid_m1,avoid_m2;
-	ofstream approach_m1,approach_m2;
+	//ofstream avoid_s1,avoid_s2,avoid_s3,avoid_s4,avoid_s5,avoid_s6,avoid_s7,avoid_s8,avoid_s9,avoid_s10,avoid_s11,avoid_s12,avoid_s13,avoid_s14,avoid_s15;
+	//ofstream approach_s1,approach_s2,approach_s3,approach_s4,approach_s5,approach_s6,approach_s7,approach_s8,approach_s9,approach_s10,approach_s11,approach_s12,approach_s13,approach_s14,approach_s15;
+	//ofstream avoid_m1,avoid_m2;
+	//ofstream approach_m1,approach_m2;
 
 	avoid_posx.open("B_avoid_aposx.dat");
 	avoid_n1.open("B_avoid_n1.dat");
@@ -934,14 +873,6 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	avoid_n5.open("B_avoid_n5.dat");
 	avoid_n6.open("B_avoid_n6.dat");
 	avoid_n7.open("B_avoid_n7.dat");
-	// avoid_n8.open("B_avoid_n8.dat");
-	// avoid_n9.open("B_avoid_n9.dat");
-	// avoid_n10.open("B_avoid_n10.dat");
-	// avoid_n11.open("B_avoid_n11.dat");
-	// avoid_n12.open("B_avoid_n12.dat");
-	// avoid_n13.open("B_avoid_n13.dat");
-	// avoid_n14.open("B_avoid_n14.dat");
-	// avoid_n15.open("B_avoid_n15.dat");
 
 	approach_posx.open("B_approach_aposx.dat");
 	approach_n1.open("B_approach_n1.dat");
@@ -951,52 +882,44 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	approach_n5.open("B_approach_n5.dat");
 	approach_n6.open("B_approach_n6.dat");
 	approach_n7.open("B_approach_n7.dat");
-	// approach_n8.open("B_approach_n8.dat");
-	// approach_n9.open("B_approach_n9.dat");
-	// approach_n10.open("B_approach_n10.dat");
-	// approach_n11.open("B_approach_n11.dat");
-	// approach_n12.open("B_approach_n12.dat");
-	// approach_n13.open("B_approach_n13.dat");
-	// approach_n14.open("B_approach_n14.dat");
-	// approach_n15.open("B_approach_n15.dat");
 
-	avoid_s1.open("B_avoid_s1.dat");
-	avoid_s2.open("B_avoid_s2.dat");
-	avoid_s3.open("B_avoid_s3.dat");
-	avoid_s4.open("B_avoid_s4.dat");
-	avoid_s5.open("B_avoid_s5.dat");
-	avoid_s6.open("B_avoid_s6.dat");
-	avoid_s7.open("B_avoid_s7.dat");
-	avoid_s8.open("B_avoid_s8.dat");
-	avoid_s9.open("B_avoid_s9.dat");
-	avoid_s10.open("B_avoid_s10.dat");
-	avoid_s11.open("B_avoid_s11.dat");
-	avoid_s12.open("B_avoid_s12.dat");
-	avoid_s13.open("B_avoid_s13.dat");
-	avoid_s14.open("B_avoid_s14.dat");
-	avoid_s15.open("B_avoid_s15.dat");
-
-	avoid_m1.open("B_avoid_m1.dat");
-	avoid_m2.open("B_avoid_m2.dat");
-
-	approach_s1.open("B_approach_s1.dat");
-	approach_s2.open("B_approach_s2.dat");
-	approach_s3.open("B_approach_s3.dat");
-	approach_s4.open("B_approach_s4.dat");
-	approach_s5.open("B_approach_s5.dat");
-	approach_s6.open("B_approach_s6.dat");
-	approach_s7.open("B_approach_s7.dat");
-	approach_s8.open("B_approach_s8.dat");
-	approach_s9.open("B_approach_s9.dat");
-	approach_s10.open("B_approach_s10.dat");
-	approach_s11.open("B_approach_s11.dat");
-	approach_s12.open("B_approach_s12.dat");
-	approach_s13.open("B_approach_s13.dat");
-	approach_s14.open("B_approach_s14.dat");
-	approach_s15.open("B_approach_s15.dat");
-
-	approach_m1.open("B_approach_m1.dat");
-	approach_m2.open("B_approach_m2.dat");
+	// avoid_s1.open("B_avoid_s1.dat");
+	// avoid_s2.open("B_avoid_s2.dat");
+	// avoid_s3.open("B_avoid_s3.dat");
+	// avoid_s4.open("B_avoid_s4.dat");
+	// avoid_s5.open("B_avoid_s5.dat");
+	// avoid_s6.open("B_avoid_s6.dat");
+	// avoid_s7.open("B_avoid_s7.dat");
+	// avoid_s8.open("B_avoid_s8.dat");
+	// avoid_s9.open("B_avoid_s9.dat");
+	// avoid_s10.open("B_avoid_s10.dat");
+	// avoid_s11.open("B_avoid_s11.dat");
+	// avoid_s12.open("B_avoid_s12.dat");
+	// avoid_s13.open("B_avoid_s13.dat");
+	// avoid_s14.open("B_avoid_s14.dat");
+	// avoid_s15.open("B_avoid_s15.dat");
+	//
+	// avoid_m1.open("B_avoid_m1.dat");
+	// avoid_m2.open("B_avoid_m2.dat");
+	//
+	// approach_s1.open("B_approach_s1.dat");
+	// approach_s2.open("B_approach_s2.dat");
+	// approach_s3.open("B_approach_s3.dat");
+	// approach_s4.open("B_approach_s4.dat");
+	// approach_s5.open("B_approach_s5.dat");
+	// approach_s6.open("B_approach_s6.dat");
+	// approach_s7.open("B_approach_s7.dat");
+	// approach_s8.open("B_approach_s8.dat");
+	// approach_s9.open("B_approach_s9.dat");
+	// approach_s10.open("B_approach_s10.dat");
+	// approach_s11.open("B_approach_s11.dat");
+	// approach_s12.open("B_approach_s12.dat");
+	// approach_s13.open("B_approach_s13.dat");
+	// approach_s14.open("B_approach_s14.dat");
+	// approach_s15.open("B_approach_s15.dat");
+	//
+	// approach_m1.open("B_approach_m1.dat");
+	// approach_m2.open("B_approach_m2.dat");
 	//--
 	double fit = 0.0;
 	int trials = 0;
@@ -1023,9 +946,8 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	{
 		for (int j = 1; j <= NUMINTER; j += 1)
 		{
-			iweights << Agent.NervousSystem.ConnectionWeight(i,j) << " ";
+			iweights << i << " " << j << " " << Agent.NervousSystem.ConnectionWeight(i,j) << endl;
 		}
-		iweights << endl;
 	}
 	for (int i = 1; i <= NUMINTER; i += 1)
 	{
@@ -1059,7 +981,7 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 							Agent.Step(rs, StepSize, Object);
 							Object.Step(StepSize);
 							if (size < BodySize){
-								approach_posx << Agent.PositionX() - Object.PositionX() << " ";
+								if (pos > 0){
 								approach_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
 								approach_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
 								approach_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
@@ -1067,36 +989,30 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 								approach_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
 								approach_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
 								approach_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								// approach_n8 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								// approach_n9 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								// approach_n10 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								// approach_n11 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								// approach_n12 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								// approach_n13 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								// approach_n14 << Agent.NervousSystem.NeuronOutput(14) << " ";
-								// approach_n15 << Agent.NervousSystem.NeuronOutput(15) << " ";
+							}
+										approach_posx << Agent.PositionX() - Object.PositionX() << " ";
 
-								approach_s1 << Agent.ExternalInput(1) << " ";
-								approach_s2 << Agent.ExternalInput(2) << " ";
-								approach_s3 << Agent.ExternalInput(3) << " ";
-								approach_s4 << Agent.ExternalInput(4) << " ";
-								approach_s5 << Agent.ExternalInput(5) << " ";
-								approach_s6 << Agent.ExternalInput(6) << " ";
-								approach_s7 << Agent.ExternalInput(7) << " ";
-								approach_s8 << Agent.ExternalInput(8) << " ";
-								approach_s9 << Agent.ExternalInput(9) << " ";
-								approach_s10 << Agent.ExternalInput(10) << " ";
-								approach_s11 << Agent.ExternalInput(11) << " ";
-								approach_s12 << Agent.ExternalInput(12) << " ";
-								approach_s13 << Agent.ExternalInput(13) << " ";
-								approach_s14 << Agent.ExternalInput(14) << " ";
-								approach_s15 << Agent.ExternalInput(15) << " ";
-
-								approach_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								approach_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								// approach_s1 << Agent.ExternalInput(1) << " ";
+								// approach_s2 << Agent.ExternalInput(2) << " ";
+								// approach_s3 << Agent.ExternalInput(3) << " ";
+								// approach_s4 << Agent.ExternalInput(4) << " ";
+								// approach_s5 << Agent.ExternalInput(5) << " ";
+								// approach_s6 << Agent.ExternalInput(6) << " ";
+								// approach_s7 << Agent.ExternalInput(7) << " ";
+								// approach_s8 << Agent.ExternalInput(8) << " ";
+								// approach_s9 << Agent.ExternalInput(9) << " ";
+								// approach_s10 << Agent.ExternalInput(10) << " ";
+								// approach_s11 << Agent.ExternalInput(11) << " ";
+								// approach_s12 << Agent.ExternalInput(12) << " ";
+								// approach_s13 << Agent.ExternalInput(13) << " ";
+								// approach_s14 << Agent.ExternalInput(14) << " ";
+								// approach_s15 << Agent.ExternalInput(15) << " ";
+								//
+								// approach_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								// approach_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 							}
 							else {
-								avoid_posx << Agent.PositionX() - Object.PositionX() << " ";
+								if (pos > 0){
 								avoid_n1 << Agent.NervousSystem.NeuronOutput(1) << " ";
 								avoid_n2 << Agent.NervousSystem.NeuronOutput(2) << " ";
 								avoid_n3 << Agent.NervousSystem.NeuronOutput(3) << " ";
@@ -1104,39 +1020,33 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 								avoid_n5 << Agent.NervousSystem.NeuronOutput(5) << " ";
 								avoid_n6 << Agent.NervousSystem.NeuronOutput(6) << " ";
 								avoid_n7 << Agent.NervousSystem.NeuronOutput(7) << " ";
-								// avoid_n8 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								// avoid_n9 << Agent.NervousSystem.NeuronOutput(9) << " ";
-								// avoid_n10 << Agent.NervousSystem.NeuronOutput(10) << " ";
-								// avoid_n11 << Agent.NervousSystem.NeuronOutput(11) << " ";
-								// avoid_n12 << Agent.NervousSystem.NeuronOutput(12) << " ";
-								// avoid_n13 << Agent.NervousSystem.NeuronOutput(13) << " ";
-								// avoid_n14 << Agent.NervousSystem.NeuronOutput(14) << " ";
-								// avoid_n15 << Agent.NervousSystem.NeuronOutput(15) << " ";
+							}
+							avoid_posx << Agent.PositionX() - Object.PositionX() << " ";
 
-								avoid_s1 << Agent.ExternalInput(1) << " ";
-								avoid_s2 << Agent.ExternalInput(2) << " ";
-								avoid_s3 << Agent.ExternalInput(3) << " ";
-								avoid_s4 << Agent.ExternalInput(4) << " ";
-								avoid_s5 << Agent.ExternalInput(5) << " ";
-								avoid_s6 << Agent.ExternalInput(6) << " ";
-								avoid_s7 << Agent.ExternalInput(7) << " ";
-								avoid_s8 << Agent.ExternalInput(8) << " ";
-								avoid_s9 << Agent.ExternalInput(9) << " ";
-								avoid_s10 << Agent.ExternalInput(10) << " ";
-								avoid_s11 << Agent.ExternalInput(11) << " ";
-								avoid_s12 << Agent.ExternalInput(12) << " ";
-								avoid_s13 << Agent.ExternalInput(13) << " ";
-								avoid_s14 << Agent.ExternalInput(14) << " ";
-								avoid_s15 << Agent.ExternalInput(15) << " ";
-
-								avoid_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
-								avoid_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
+								// avoid_s1 << Agent.ExternalInput(1) << " ";
+								// avoid_s2 << Agent.ExternalInput(2) << " ";
+								// avoid_s3 << Agent.ExternalInput(3) << " ";
+								// avoid_s4 << Agent.ExternalInput(4) << " ";
+								// avoid_s5 << Agent.ExternalInput(5) << " ";
+								// avoid_s6 << Agent.ExternalInput(6) << " ";
+								// avoid_s7 << Agent.ExternalInput(7) << " ";
+								// avoid_s8 << Agent.ExternalInput(8) << " ";
+								// avoid_s9 << Agent.ExternalInput(9) << " ";
+								// avoid_s10 << Agent.ExternalInput(10) << " ";
+								// avoid_s11 << Agent.ExternalInput(11) << " ";
+								// avoid_s12 << Agent.ExternalInput(12) << " ";
+								// avoid_s13 << Agent.ExternalInput(13) << " ";
+								// avoid_s14 << Agent.ExternalInput(14) << " ";
+								// avoid_s15 << Agent.ExternalInput(15) << " ";
+								//
+								// avoid_m1 << Agent.NervousSystem.NeuronOutput(8) << " ";
+								// avoid_m2 << Agent.NervousSystem.NeuronOutput(9) << " ";
 							}
 						}
 						final_distance = fabs(Agent.PositionX() - Object.PositionX());
 						if (size < BodySize){
 							final_distance = final_distance > MAXDISTANCE ? 0.0 : (MAXDISTANCE - final_distance)/MAXDISTANCE;
-							approach_posx << endl;
+							if (pos > 0) {
 							approach_n1 << endl;
 							approach_n2 << endl;
 							approach_n3 << endl;
@@ -1144,38 +1054,32 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 							approach_n5 << endl;
 							approach_n6 << endl;
 							approach_n7 << endl;
-							// approach_n8 << endl;
-							// approach_n9 << endl;
-							// approach_n10 << endl;
-							// approach_n11 << endl;
-							// approach_n12 << endl;
-							// approach_n13 << endl;
-							// approach_n14 << endl;
-							// approach_n15 << endl;
+						}
+						approach_posx << endl;
 
-							approach_s1 << endl;
-							approach_s2 << endl;
-							approach_s3 << endl;
-							approach_s4 << endl;
-							approach_s5 << endl;
-							approach_s6 << endl;
-							approach_s7 << endl;
-							approach_s8 << endl;
-							approach_s9 << endl;
-							approach_s10 << endl;
-							approach_s11 << endl;
-							approach_s12 << endl;
-							approach_s13 << endl;
-							approach_s14 << endl;
-							approach_s15 << endl;
-
-
-							approach_m1 << endl;
-							approach_m2 << endl;
+							// approach_s1 << endl;
+							// approach_s2 << endl;
+							// approach_s3 << endl;
+							// approach_s4 << endl;
+							// approach_s5 << endl;
+							// approach_s6 << endl;
+							// approach_s7 << endl;
+							// approach_s8 << endl;
+							// approach_s9 << endl;
+							// approach_s10 << endl;
+							// approach_s11 << endl;
+							// approach_s12 << endl;
+							// approach_s13 << endl;
+							// approach_s14 << endl;
+							// approach_s15 << endl;
+							//
+							//
+							// approach_m1 << endl;
+							// approach_m2 << endl;
 						}
 						else {
 							final_distance = final_distance > MAXDISTANCE ? 1.0 : final_distance/MAXDISTANCE;
-							avoid_posx << endl;
+							if (pos > 0) {
 							avoid_n1 << endl;
 							avoid_n2 << endl;
 							avoid_n3 << endl;
@@ -1183,33 +1087,27 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 							avoid_n5 << endl;
 							avoid_n6 << endl;
 							avoid_n7 << endl;
-							// avoid_n8 << endl;
-							// avoid_n9 << endl;
-							// avoid_n10 << endl;
-							// avoid_n11 << endl;
-							// avoid_n12 << endl;
-							// avoid_n13 << endl;
-							// avoid_n14 << endl;
-							// avoid_n15 << endl;
+						}
+						avoid_posx << endl;
 
-							avoid_s1 << endl;
-							avoid_s2 << endl;
-							avoid_s3 << endl;
-							avoid_s4 << endl;
-							avoid_s5 << endl;
-							avoid_s6 << endl;
-							avoid_s7 << endl;
-							avoid_s8 << endl;
-							avoid_s9 << endl;
-							avoid_s10 << endl;
-							avoid_s11 << endl;
-							avoid_s12 << endl;
-							avoid_s13 << endl;
-							avoid_s14 << endl;
-							avoid_s15 << endl;
-
-							avoid_m1 << endl;
-							avoid_m2 << endl;
+							// avoid_s1 << endl;
+							// avoid_s2 << endl;
+							// avoid_s3 << endl;
+							// avoid_s4 << endl;
+							// avoid_s5 << endl;
+							// avoid_s6 << endl;
+							// avoid_s7 << endl;
+							// avoid_s8 << endl;
+							// avoid_s9 << endl;
+							// avoid_s10 << endl;
+							// avoid_s11 << endl;
+							// avoid_s12 << endl;
+							// avoid_s13 << endl;
+							// avoid_s14 << endl;
+							// avoid_s15 << endl;
+							//
+							// avoid_m1 << endl;
+							// avoid_m2 << endl;
 						}
 						trials += 1;
 						fit += final_distance;
@@ -1229,32 +1127,25 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	avoid_n5.close();
 	avoid_n6.close();
 	avoid_n7.close();
-	// avoid_n8.close();
-	// avoid_n9.close();
-	// avoid_n10.close();
-	// avoid_n11.close();
-	// avoid_n12.close();
-	// avoid_n13.close();
-	// avoid_n14.close();
-	// avoid_n15.close();
-	avoid_s1.close();
-	avoid_s2.close();
-	avoid_s3.close();
-	avoid_s4.close();
-	avoid_s5.close();
-	avoid_s6.close();
-	avoid_s7.close();
-	avoid_s8.close();
-	avoid_s9.close();
-	avoid_s10.close();
-	avoid_s11.close();
-	avoid_s12.close();
-	avoid_s13.close();
-	avoid_s14.close();
-	avoid_s15.close();
 
-	avoid_m1.close();
-	avoid_m2.close();
+	// avoid_s1.close();
+	// avoid_s2.close();
+	// avoid_s3.close();
+	// avoid_s4.close();
+	// avoid_s5.close();
+	// avoid_s6.close();
+	// avoid_s7.close();
+	// avoid_s8.close();
+	// avoid_s9.close();
+	// avoid_s10.close();
+	// avoid_s11.close();
+	// avoid_s12.close();
+	// avoid_s13.close();
+	// avoid_s14.close();
+	// avoid_s15.close();
+	//
+	// avoid_m1.close();
+	// avoid_m2.close();
 
 	approach_posx.close();
 	approach_n1.close();
@@ -1264,32 +1155,25 @@ void BehaviorCC(TVector<double> &v, RandomState &rs)
 	approach_n5.close();
 	approach_n6.close();
 	approach_n7.close();
-	// approach_n8.close();
-	// approach_n9.close();
-	// approach_n10.close();
-	// approach_n11.close();
-	// approach_n12.close();
-	// approach_n13.close();
-	// approach_n14.close();
-	// approach_n15.close();
-	approach_s1.close();
-	approach_s2.close();
-	approach_s3.close();
-	approach_s4.close();
-	approach_s5.close();
-	approach_s6.close();
-	approach_s7.close();
-	approach_s8.close();
-	approach_s9.close();
-	approach_s10.close();
-	approach_s11.close();
-	approach_s12.close();
-	approach_s13.close();
-	approach_s14.close();
-	approach_s15.close();
 
-	approach_m1.close();
-	approach_m2.close();
+	// approach_s1.close();
+	// approach_s2.close();
+	// approach_s3.close();
+	// approach_s4.close();
+	// approach_s5.close();
+	// approach_s6.close();
+	// approach_s7.close();
+	// approach_s8.close();
+	// approach_s9.close();
+	// approach_s10.close();
+	// approach_s11.close();
+	// approach_s12.close();
+	// approach_s13.close();
+	// approach_s14.close();
+	// approach_s15.close();
+	//
+	// approach_m1.close();
+	// approach_m2.close();
 }
 
 void GeneralizationCC(TVector<double> &v, RandomState &rs)
@@ -1307,9 +1191,9 @@ void GeneralizationCC(TVector<double> &v, RandomState &rs)
 	GenPhenMapping(v, phenotype);
 	Agent.SetController(phenotype);
 	Circle Object(0.0,STARTHEIGHT,-3,0.0,OBJECTHEIGHT);
-	for (double pos = 1.0; pos <= 5.0; pos += 0.01)
+	for (double pos = MINPOS; pos <= MAXPOS; pos += 0.1)
 	{
-		for (double size = 20.0; size <= 40.0; size += 0.05)
+		for (double size = MINSIZE; size <= MAXSIZE; size += 0.1)
 		{
 			Agent.Reset(0, 0, 0);
 			Agent.SetPositionX(0);
@@ -1539,11 +1423,11 @@ int main (int argc, const char* argv[]) {
 	s.SetReproductionMode(GENETIC_ALGORITHM);
 	s.SetPopulationSize(POPSIZE);
 	s.SetMaxGenerations(GENS);
-	s.SetMutationVariance(0.01);
+	s.SetMutationVariance(0.05);
 	s.SetCrossoverProbability(0.5);
 	s.SetCrossoverMode(UNIFORM);
 	s.SetMaxExpectedOffspring(1.1);
-	s.SetElitistFraction(0.1);
+	s.SetElitistFraction(0.02);
 	s.SetSearchConstraint(1);
 	s.SetCheckpointInterval(0);
 	// s.SetReEvaluationFlag(1);
@@ -1580,8 +1464,8 @@ int main (int argc, const char* argv[])
 	// TVector<double> avgOutputs(1, TOTALN);
 	// avgOutputsFile.open("avgoutputs.dat");
 	// avgOutputsFile >> avgOutputs;
-	// BehaviorCC(bestVector, rs);
-	// BehaviorPA(bestVector, rs);
+	BehaviorCC(bestVector, rs);
+	BehaviorPA(bestVector, rs);
 	// GeneralizationCC(bestVector, rs);
 	// GeneralizationPA(bestVector, rs);
 	// EdgeLesionsCC(bestVector, rs);
@@ -1589,7 +1473,7 @@ int main (int argc, const char* argv[])
 	//SystematicInfoTwoWayEdgeLesionsPA(bestVector, rs);
 	//SystematicInfoOneWayEdgeLesionsPA(bestVector, rs);
 	//SystematicInfoTwoWayEdgeLesionsCC(bestVector, rs);
-	SystematicInfoOneWayEdgeLesionsCC(bestVector, rs);
+	//SystematicInfoOneWayEdgeLesionsCC(bestVector, rs);
 	// InfoNodeLesionsCC(bestVector, avgOutputs, rs);
 	//InfoTwoWayEdgeLesionsCC(bestVector, avgOutputs, rs);
 	// InfoNodeLesionsPA(bestVector, avgOutputs, rs);
