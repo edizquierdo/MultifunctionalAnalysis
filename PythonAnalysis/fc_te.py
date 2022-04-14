@@ -37,7 +37,8 @@ def fc_te(data_dir, task_name, subtask_name, num_neurons, show=True):
     # find mis for all combinations
     tes = []
     for ni in tqdm.tqdm(range(num_neurons), desc="FC_TE"):
-        for nj in range(ni, num_neurons):
+        #for nj in range(ni, num_neurons):
+        for nj in range(num_neurons):
             # i to j
             it = infotheory.InfoTools(dims, nreps)
             it.set_bin_boundaries([neuron_bins, neuron_bins, neuron_bins])
@@ -47,14 +48,14 @@ def fc_te(data_dir, task_name, subtask_name, num_neurons, show=True):
             tes.append([ni, nj, te])
             del it
 
-            if ni != nj:
-                # j to i
-                it = infotheory.InfoTools(dims, nreps)
-                it.set_bin_boundaries([neuron_bins, neuron_bins, neuron_bins])
-                d = np.vstack([all_neuron_dat[nj][:-1], all_neuron_dat[ni][:-1], all_neuron_dat[ni][1:]]).T
-                it.add_data(d)
-                te = it.mutual_info([1, 1, 0]) - it.mutual_info([-1, 1, 0])
-                tes.append([nj, ni, te])
+            # if ni != nj:
+            #     # j to i
+            #     it = infotheory.InfoTools(dims, nreps)
+            #     it.set_bin_boundaries([neuron_bins, neuron_bins, neuron_bins])
+            #     d = np.vstack([all_neuron_dat[nj][:-1], all_neuron_dat[ni][:-1], all_neuron_dat[ni][1:]]).T
+            #     it.add_data(d)
+            #     te = it.mutual_info([1, 1, 0]) - it.mutual_info([-1, 1, 0])
+            #     tes.append([nj, ni, te])
 
     tes = np.array(tes)
 

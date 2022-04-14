@@ -35,7 +35,8 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
     # find mis for all combinations
     mis = []  # np.zeros([num_neurons, num_neurons])
     for ni in tqdm.tqdm(range(num_neurons), desc="FC_MI"):
-        for nj in range(ni, num_neurons):
+        # for nj in range(ni, num_neurons):
+        for nj in range(num_neurons):
             it = infotheory.InfoTools(dims, nreps)
             it.set_bin_boundaries([neuron_bins, neuron_bins])
             d = np.vstack([all_neuron_dat[ni], all_neuron_dat[nj]]).T
@@ -43,8 +44,8 @@ def fc_mi(data_dir, task_name, subtask_name, num_neurons, show=True):
             mi = it.mutual_info([0, 1])
             mi /= 4.10439820533  # max across all conditions of task and subtask -- need a better method
             mis.append([ni, nj, mi])
-            if ni != nj:
-                mis.append([nj, ni, mi])
+            # if ni != nj:
+            #     mis.append([nj, ni, mi])
 
     mis = np.array(mis)
 
