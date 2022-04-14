@@ -5,7 +5,7 @@
 #include "VisualAgent.h"
 
 #define EVOLVE
-#define PRINTTOFILE
+// #define PRINTTOFILE
 
 using namespace std;
 
@@ -49,14 +49,14 @@ const double REPS = 1;
 
 // Circuit's genotype-phenotype mapping
 const double WEIGHTMAX = 10.0;
-const double BIASMAX = 100; //XXX
+const double BIASMAX = 10.0; //XXX
 const double TAUMIN = 1.0;
 const double TAUMAX = 2.0;
 const double GAINMIN = 1.0;
 const double GAINMAX = 5.0;
 
-const double WINDOWSIZE = 10;
-const double BOUNDARY = 0.01;
+const double WINDOWSIZE = 1;
+const double BOUNDARY = 0.0;
 const double BIASTIMECONSTANT = 20.0;
 const double WEIGHTTIMECONSTANT = 40.0;
 const double WEIGHTRANGE = WEIGHTMAX;

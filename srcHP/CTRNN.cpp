@@ -208,7 +208,6 @@ void CTRNN::EulerStep(double stepsize)
     }
     avgoutputs[i] = avgoutputs[i]/windowsize;
   }
-
   // NEW: Update rho for each neuron.
   for (int i = 1; i <= size; i++) {
     if (avgoutputs[i] < boundary[i]) {
